@@ -1,0 +1,7 @@
+# macOS / OneDrive noise
+.DS_Store
+Icon?
+._*
+
+# Internal working documents — not part of the published resource
+*.docx

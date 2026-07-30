@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en-AU" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inclusive Esports Game Finder</title>
+<meta name="description" content="A free tool to help educators choose the right esports game for inclusive school programs.">
+<meta name="color-scheme" content="light dark">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   Two themes driven by [data-theme] on <html>.
+   ============================================================ */
+:root{
+  --bg:#f6f8fb;
+  --bg-elev:#ffffff;
+  --bg-sunken:#eef2f7;
+  --text:#111a2b;
+  --text-muted:#4b5a71;
+  --text-faint:#6b7a92;
+  --border:#dde4ee;
+  --border-strong:#c3cede;
+  --brand:#0f6b64;          /* deep teal - AA on white */
+  --brand-ink:#0b544e;
+  --brand-soft:#e3f4f1;
+  --accent:#5a3fd6;         /* indigo */
+  --accent-soft:#ece8fd;
+  --warn:#8a5a00;
+  --warn-soft:#fdf1dc;
+  --shadow:0 1px 2px rgba(16,26,43,.06), 0 8px 24px rgba(16,26,43,.08);
+  --shadow-lg:0 2px 4px rgba(16,26,43,.08), 0 18px 48px rgba(16,26,43,.14);
+  --radius:16px;
+  --radius-sm:10px;
+  --maxw:1100px;
+}
+[data-theme="dark"]{
+  --bg:#0e1420;
+  --bg-elev:#161f2f;
+  --bg-sunken:#111a28;
+  --text:#eef3fa;
+  --text-muted:#b3c0d4;
+  --text-faint:#93a2b9;
+  --border:#26324a;
+  --border-strong:#38486a;
+  --brand:#4fd6c4;
+  --brand-ink:#8ceadd;
+  --brand-soft:#12332f;
+  --accent:#a89bff;
+  --accent-soft:#231f45;
+  --warn:#f0c069;
+  --warn-soft:#332a16;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  --shadow-lg:0 2px 6px rgba(0,0,0,.5), 0 22px 60px rgba(0,0,0,.5);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font:16px/1.55 "Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  transition:background .25s ease,color .25s ease;
+}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .4em;letter-spacing:-.015em}
+h1{font-size:clamp(1.6rem,1.1rem + 2.2vw,2.5rem)}
+h2{font-size:clamp(1.3rem,1rem + 1.3vw,1.9rem)}
+h3{font-size:1.15rem}
+p{margin:0 0 1em}
+a{color:var(--brand);text-underline-offset:3px}
+img,svg{max-width:100%}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+svg.i{flex:none;vertical-align:-.18em}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:-9999px;top:0;background:var(--brand);color:#fff;padding:10px 16px;z-index:99;border-radius:0 0 8px 0}
+.skip:focus{left:0}
+
+/* ---------- Header ---------- */
+header.site{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb,var(--bg-elev) 92%,transparent);
+  backdrop-filter:saturate(1.4) blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.bar{display:flex;align-items:center;gap:16px;min-height:66px;flex-wrap:wrap;padding:8px 0}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:1.03rem;letter-spacing:-.01em;margin-right:auto}
+.brand .glyph{
+  width:36px;height:36px;flex:none;border-radius:11px;
+  background:linear-gradient(135deg,var(--brand),var(--accent));
+  display:grid;place-items:center;color:#fff;font-size:19px;
+}
+.brand small{display:block;font-weight:500;font-size:.72rem;color:var(--text-faint);letter-spacing:.02em}
+nav.main{display:flex;gap:2px;flex-wrap:wrap}
+nav.main button{
+  border:0;background:transparent;color:var(--text-muted);
+  font:inherit;font-size:.92rem;font-weight:600;
+  padding:9px 13px;border-radius:9px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;
+}
+nav.main button:hover{background:var(--bg-sunken);color:var(--text)}
+nav.main button[aria-current="page"]{background:var(--brand-soft);color:var(--brand-ink)}
+[data-theme="dark"] nav.main button[aria-current="page"]{color:var(--brand)}
+
+/* ---------- Buttons ---------- */
+.btn{
+  font:inherit;font-weight:650;cursor:pointer;
+  border:1px solid transparent;border-radius:11px;
+  padding:11px 19px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .12s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease;
+  min-height:44px;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:var(--shadow)}
+.btn-primary:hover{background:var(--brand-ink)}
+[data-theme="dark"] .btn-primary{color:#06201d}
+[data-theme="dark"] .btn-primary:hover{background:var(--brand-ink)}
+.btn-ghost{background:var(--bg-elev);color:var(--text);border-color:var(--border-strong)}
+.btn-ghost:hover{background:var(--bg-sunken)}
+.btn-quiet{background:transparent;color:var(--text-muted);border-color:transparent;padding:10px 12px}
+.btn-quiet:hover{background:var(--bg-sunken);color:var(--text)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.icon-btn{
+  width:44px;height:44px;padding:0;border-radius:11px;border:1px solid var(--border-strong);
+  background:var(--bg-elev);color:var(--text);cursor:pointer;display:grid;place-items:center;font-size:18px;
+}
+.icon-btn:hover{background:var(--bg-sunken)}
+
+/* ---------- Views ---------- */
+main{padding:34px 0 80px}
+.view[hidden]{display:none}
+.view{animation:fade .3s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- Hero / intro ---------- */
+.hero{
+  background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:clamp(22px,4vw,40px);margin-bottom:28px;
+}
+.hero p{max-width:62ch;color:var(--text-muted);margin-bottom:0}
+.hero .eyebrow{
+  display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--brand-ink);background:var(--bg-elev);padding:5px 11px;border-radius:99px;margin-bottom:14px;
+}
+[data-theme="dark"] .hero .eyebrow{color:var(--brand)}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+
+/* ---------- Wizard ---------- */
+.progress-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.step-count{font-size:.85rem;font-weight:650;color:var(--text-faint);letter-spacing:.02em}
+.track{height:8px;border-radius:99px;background:var(--bg-sunken);overflow:hidden;border:1px solid var(--border)}
+.track > i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .4s cubic-bezier(.4,0,.2,1)}
+.step-dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.step-dots button{
+  border:1px solid var(--border);background:var(--bg-elev);color:var(--text-faint);
+  font:inherit;font-size:.78rem;font-weight:650;padding:4px 10px;border-radius:99px;cursor:pointer;min-height:30px;
+}
+.step-dots button[data-state="done"]{background:var(--brand-soft);color:var(--brand-ink);border-color:transparent}
+[data-theme="dark"] .step-dots button[data-state="done"]{color:var(--brand)}
+.step-dots button[data-state="current"]{background:var(--brand);color:#fff;border-color:transparent}
+[data-theme="dark"] .step-dots button[data-state="current"]{color:#06201d}
+
+.card-panel{
+  background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);
+  padding:clamp(20px,3.4vw,34px);box-shadow:var(--shadow);margin-top:22px;
+}
+.q-title{margin-bottom:6px}
+.q-hint{color:var(--text-muted);margin-bottom:22px;max-width:60ch}
+.q-hint .pill{
+  display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  background:var(--accent-soft);color:var(--accent);padding:3px 9px;border-radius:99px;margin-right:8px;
+  vertical-align:1px;
+}
+
+.options{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(212px,1fr))}
+.opt{
+  position:relative;text-align:left;font:inherit;cursor:pointer;
+  background:var(--bg-elev);border:2px solid var(--border);border-radius:var(--radius-sm);
+  padding:15px 15px 15px 52px;min-height:64px;color:var(--text);
+  transition:border-color .15s ease,background .15s ease,transform .12s ease;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.opt:hover{border-color:var(--border-strong);background:var(--bg-sunken)}
+.opt .ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);line-height:0;color:var(--text-faint)}
+.opt[aria-pressed="true"] .ico{color:var(--brand-ink)}
+[data-theme="dark"] .opt[aria-pressed="true"] .ico{color:var(--brand)}
+.opt .lbl{font-weight:650}
+.opt .sub{font-size:.8rem;color:var(--text-faint);margin-top:2px}
+.opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.opt[aria-pressed="true"] .sub{color:var(--text-muted)}
+/* Tick badge drawn in CSS: a rotated L of borders inside a filled circle. */
+.opt[aria-pressed="true"]::before{
+  content:"";position:absolute;top:9px;right:11px;width:19px;height:19px;
+  border-radius:50%;background:var(--brand);
+}
+.opt[aria-pressed="true"]::after{
+  content:"";position:absolute;top:14px;right:16px;width:8px;height:4px;
+  border-left:2px solid var(--bg-elev);border-bottom:2px solid var(--bg-elev);
+  transform:rotate(-45deg);
+}
+
+.wizard-nav{display:flex;gap:10px;align-items:center;margin-top:26px;flex-wrap:wrap}
+.wizard-nav .spacer{flex:1}
+
+/* ---------- Result layout ---------- */
+.result-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 30px}
+.chip{
+  font-size:.82rem;font-weight:600;background:var(--bg-elev);border:1px solid var(--border);
+  padding:5px 12px;border-radius:99px;color:var(--text-muted);
+}
+.chip b{color:var(--text);font-weight:700}
+.section-label{
+  display:flex;align-items:center;gap:10px;margin:38px 0 16px;
+  font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);
+}
+.section-label::after{content:"";flex:1;height:1px;background:var(--border)}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+
+/* ---------- Game card ---------- */
+.game{
+  background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.game:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.game.best{border:2px solid var(--brand);box-shadow:var(--shadow-lg)}
+.art{position:relative;aspect-ratio:16/6;overflow:hidden;background:var(--bg-sunken)}
+.art .scene{display:block;width:100%;height:100%;object-fit:cover}
+.art .coverwrap{position:absolute;inset:0;display:block;z-index:1}
+.art .cover-bg{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:blur(20px) saturate(1.25) brightness(.86);transform:scale(1.18);
+}
+.art .cover{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center}
+.art::after{
+  content:"";position:absolute;z-index:2;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,.06),transparent 34%,rgba(0,0,0,.12));
+}
+.art .score{
+  position:absolute;z-index:3;top:10px;right:10px;background:rgba(255,255,255,.94);color:#0d1a2b;
+  font-size:.78rem;font-weight:800;padding:5px 11px;border-radius:99px;letter-spacing:.01em;
+}
+.art .fav{
+  position:absolute;z-index:3;top:10px;left:10px;width:38px;height:38px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.92);color:#20303f;cursor:pointer;line-height:0;
+  display:grid;place-items:center;box-shadow:0 1px 4px rgba(0,0,0,.18);
+}
+.art .fav:hover{background:#fff}
+.art .fav[aria-pressed="true"]{background:#ffce3d;color:#5a4200}
+.art .dept{
+  position:absolute;z-index:3;left:10px;bottom:10px;
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.74rem;font-weight:800;letter-spacing:.02em;
+  padding:5px 11px;border-radius:99px;background:rgba(255,255,255,.94);color:#0d1a2b;
+}
+.art .dept[data-status="permitted"]{background:#0f6b64;color:#fff}
+.art .dept[data-status="notPermitted"]{background:#a01f2f;color:#fff}
+.art .dept[data-status="unlisted"]{background:#fdf1dc;color:#6b4400}
+.dept-line{
+  font-size:.82rem;border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:14px;
+  background:var(--bg-sunken);border:1px solid var(--border);color:var(--text-muted);
+}
+.dept-line b{color:var(--text)}
+.dept-line[data-status="unlisted"]{background:var(--warn-soft);border-color:transparent}
+.dept-line[data-status="notPermitted"]{background:#fde8ea;border-color:transparent;color:#6b1020}
+[data-theme="dark"] .dept-line[data-status="notPermitted"]{background:#3a1620;color:#ffc9d1}
+.toggle{
+  display:inline-flex;align-items:center;gap:9px;font:inherit;font-size:.88rem;font-weight:650;
+  background:var(--bg-elev);border:1px solid var(--border-strong);color:var(--text);
+  padding:9px 15px 9px 12px;border-radius:99px;cursor:pointer;min-height:44px;
+}
+.toggle .sw{
+  width:38px;height:22px;border-radius:99px;background:var(--border-strong);position:relative;flex:none;
+  transition:background .18s ease;
+}
+.toggle .sw::after{
+  content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;
+  background:#fff;transition:transform .18s ease;
+}
+.toggle[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.toggle[aria-pressed="true"] .sw{background:var(--brand)}
+.toggle[aria-pressed="true"] .sw::after{transform:translateX(16px)}
+.game-body{padding:17px 18px 18px;display:flex;flex-direction:column;flex:1}
+.game-body h3{margin-bottom:3px}
+.genre{font-size:.83rem;color:var(--text-faint);margin-bottom:12px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin:0 0 14px;padding:0;list-style:none;font-size:.85rem}
+.meta li{display:flex;flex-direction:column}
+.meta .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);font-weight:700}
+.meta .v{color:var(--text);font-weight:600}
+.why{background:var(--brand-soft);border-radius:var(--radius-sm);padding:13px 15px;margin-bottom:14px}
+.why h4{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--brand-ink);margin-bottom:7px}
+[data-theme="dark"] .why h4{color:var(--brand)}
+.why ul{margin:0;padding-left:18px;font-size:.88rem;color:var(--text-muted)}
+.why li{margin-bottom:4px}
+.why li:last-child{margin-bottom:0}
+.why li.warn{color:var(--warn);font-weight:600}
+.why li.warn svg{vertical-align:-.2em}
+details.more{border-top:1px solid var(--border);margin-top:auto;padding-top:12px}
+details.more summary{
+  cursor:pointer;font-weight:650;font-size:.9rem;color:var(--brand);list-style:none;
+  display:flex;align-items:center;gap:6px;min-height:32px;
+}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{
+  content:"";width:7px;height:7px;margin-left:2px;
+  border-right:2px solid currentColor;border-bottom:2px solid currentColor;
+  transform:translateY(-2px) rotate(45deg);transition:transform .2s ease;
+}
+details.more[open] summary::after{transform:translateY(1px) rotate(-135deg)}
+.more-body{padding-top:12px;font-size:.88rem;color:var(--text-muted)}
+.more-body h5{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin:14px 0 6px}
+.more-body h5:first-child{margin-top:0}
+.more-body ul{margin:0;padding-left:18px}
+.more-body li{margin-bottom:3px}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.76rem;background:var(--bg-sunken);border:1px solid var(--border);padding:3px 9px;border-radius:99px;color:var(--text-muted)}
+.rating{display:inline-flex;gap:2px;vertical-align:-1px}
+.rating i{width:9px;height:9px;border-radius:2px;background:var(--border-strong);display:inline-block}
+.rating i.on{background:var(--brand)}
+
+/* ---------- Browse / search ---------- */
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.search{
+  flex:1;min-width:220px;position:relative;
+}
+.search input{
+  width:100%;font:inherit;padding:12px 14px 12px 40px;border-radius:11px;min-height:46px;
+  border:1px solid var(--border-strong);background:var(--bg-elev);color:var(--text);
+}
+.search .search-ico{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  color:var(--text-faint);line-height:0;pointer-events:none;
+}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px}
+.filters button{
+  font:inherit;font-size:.83rem;font-weight:620;cursor:pointer;min-height:36px;
+  border:1px solid var(--border);background:var(--bg-elev);color:var(--text-muted);
+  padding:6px 13px;border-radius:99px;
+}
+.filters button[aria-pressed="true"]{background:var(--brand);color:#fff;border-color:transparent}
+[data-theme="dark"] .filters button[aria-pressed="true"]{color:#06201d}
+
+/* ---------- Compare ---------- */
+.compare-picks{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-bottom:22px}
+label.field{display:block;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:6px}
+select{
+  width:100%;font:inherit;padding:11px 12px;border-radius:11px;min-height:46px;
+  border:1px solid var(--border-strong);background:var(--bg-elev);color:var(--text);
+}
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-elev)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+tbody th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);font-weight:700;width:30%}
+thead th{background:var(--bg-sunken);font-size:.95rem}
+tr:last-child td,tr:last-child th{border-bottom:0}
+
+/* ---------- Misc ---------- */
+.empty{
+  text-align:center;padding:56px 20px;border:2px dashed var(--border-strong);
+  border-radius:var(--radius);color:var(--text-muted);
+}
+.empty .big{font-size:38px;display:block;margin-bottom:10px}
+.note{
+  background:var(--warn-soft);border-left:4px solid var(--warn);color:var(--text);
+  padding:14px 16px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:.9rem;margin:20px 0;
+}
+footer.site{border-top:1px solid var(--border);padding:26px 0 44px;color:var(--text-faint);font-size:.87rem}
+footer.site p{margin-bottom:.5em}
+
+.prose{max-width:70ch}
+.prose h3{margin-top:26px}
+.prose ul{padding-left:20px}
+.prose li{margin-bottom:6px}
+
+/* ---------- Motion & print ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+@media print{
+  header.site,nav.main,footer.site,.no-print,.hero,.fav,.filters,.toolbar{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .game{break-inside:avoid;box-shadow:none;border:1px solid #999}
+  .art{aspect-ratio:16/4}
+  /* On paper the strip is shallower, so crop the key art to fill it rather than
+     letterboxing it, and drop the blurred backdrop — it only wastes ink. */
+  .art .cover-bg,.art::after{display:none}
+  .art .cover{object-fit:cover}
+  details.more{display:block}
+  details.more summary{display:none}
+  .more-body{display:block !important}
+  main{padding:0}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap bar">
+    <div class="brand">
+      <span class="glyph" data-icon="gamepad" data-icon-size="20"></span>
+      <span>Inclusive Esports Game Finder
+        <small>Choose the right game for every student</small>
+      </span>
+    </div>
+    <nav class="main" aria-label="Main">
+      <button type="button" data-nav="wizard" aria-current="page"><span data-icon="compass" data-icon-size="17"></span> Finder</button>
+      <button type="button" data-nav="browse"><span data-icon="library" data-icon-size="17"></span> All games</button>
+      <button type="button" data-nav="compare"><span data-icon="scales" data-icon-size="17"></span> Compare</button>
+      <button type="button" data-nav="favourites"><span data-icon="star" data-icon-size="17"></span> Saved <span id="fav-count" class="sr-only">0 saved</span></button>
+      <button type="button" data-nav="about"><span data-icon="info" data-icon-size="17"></span> About</button>
+    </nav>
+    <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch to dark mode" title="Toggle dark mode"></button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- ========================= WIZARD ========================= -->
+  <section class="view" id="view-wizard" aria-labelledby="wizard-h">
+    <div class="hero" id="intro">
+      <span class="eyebrow">Free classroom tool</span>
+      <h1 id="wizard-h">Find the right game for your students</h1>
+      <p>Answer seven quick questions about your group, your equipment and what you want the session to achieve.
+         Every game in the database is scored against your answers, so you get a best match plus strong
+         alternatives &mdash; with the reasons why, the accessibility features to switch on, and the exact settings
+         to use on the day. Every title is flagged against the Queensland Department of Education's assessed
+         game list.</p>
+      <div class="hero-actions">
+        <button type="button" class="btn btn-primary" id="start-btn">Start the finder <span data-icon="arrowRight"></span></button>
+        <button type="button" class="btn btn-ghost" data-nav="browse">Browse all <span data-game-count>24</span> games</button>
+        <button type="button" class="btn btn-ghost" id="discover-btn"><span data-icon="dice" data-icon-size="18"></span> Discover a game</button>
+      </div>
+    </div>
+
+    <div id="wizard-body" hidden>
+      <div class="progress-head">
+        <span class="step-count" id="step-count">Question 1 of 7</span>
+        <button type="button" class="btn btn-quiet" id="restart-btn">Start over</button>
+      </div>
+      <div class="track"><i id="track-fill" style="width:14%"></i></div>
+      <div class="step-dots" id="step-dots" role="group" aria-label="Jump to question"></div>
+
+      <div class="card-panel">
+        <h2 class="q-title" id="q-title">&nbsp;</h2>
+        <p class="q-hint" id="q-hint"></p>
+        <div class="options" id="options" role="group" aria-labelledby="q-title"></div>
+        <div class="wizard-nav">
+          <button type="button" class="btn btn-ghost" id="back-btn"><span data-icon="arrowLeft"></span> Back</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn btn-quiet" id="skip-btn" hidden>No preference</button>
+          <button type="button" class="btn btn-primary" id="next-btn" disabled>Next <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+      <p class="sr-only" role="status" aria-live="polite" id="wizard-live"></p>
+    </div>
+  </section>
+
+  <!-- ========================= RESULTS ========================= -->
+  <section class="view" id="view-results" hidden aria-labelledby="results-h">
+    <div class="result-head">
+      <div>
+        <h1 id="results-h">Your recommended games</h1>
+        <p style="color:var(--text-muted);margin:0">Scored against everything you told us about your group.</p>
+      </div>
+      <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="toggle" data-dept-toggle aria-pressed="true">
+          <span class="sw" aria-hidden="true"></span> Department-permitted only
+        </button>
+        <button type="button" class="btn btn-ghost" id="print-btn"><span data-icon="printer" data-icon-size="18"></span> Print / save PDF</button>
+        <button type="button" class="btn btn-ghost" id="redo-btn"><span data-icon="rotate" data-icon-size="18"></span> Change answers</button>
+      </div>
+    </div>
+    <div class="chips" id="answer-chips"></div>
+    <div id="results-body"></div>
+  </section>
+
+  <!-- ========================= BROWSE ========================= -->
+  <section class="view" id="view-browse" hidden aria-labelledby="browse-h">
+    <h1 id="browse-h">All games</h1>
+    <p style="color:var(--text-muted);max-width:62ch">Every title in the database, with cost, player numbers,
+       control complexity, accessibility features and suggested school settings.</p>
+    <div class="toolbar">
+      <div class="search">
+        <label for="search-input" class="sr-only">Search games</label>
+        <span class="search-ico" data-icon="search"></span>
+        <input type="search" id="search-input" placeholder="Search by name, genre or platform…" autocomplete="off">
+      </div>
+      <button type="button" class="toggle" data-dept-toggle aria-pressed="true">
+        <span class="sw" aria-hidden="true"></span> Department-permitted only
+      </button>
+      <button type="button" class="btn btn-ghost" id="discover-btn-2"><span data-icon="dice" data-icon-size="18"></span> Random pick</button>
+    </div>
+    <div class="filters" id="browse-filters" role="group" aria-label="Filter by platform and style"></div>
+    <div id="browse-notice"></div>
+    <div class="grid" id="browse-grid"></div>
+  </section>
+
+  <!-- ========================= COMPARE ========================= -->
+  <section class="view" id="view-compare" hidden aria-labelledby="compare-h">
+    <h1 id="compare-h">Compare two games</h1>
+    <p style="color:var(--text-muted);max-width:62ch">Useful when you are deciding between a safe first choice and
+       something more ambitious for a second term.</p>
+    <div class="compare-picks">
+      <div>
+        <label class="field" for="cmp-a">Game A</label>
+        <select id="cmp-a"></select>
+      </div>
+      <div>
+        <label class="field" for="cmp-b">Game B</label>
+        <select id="cmp-b"></select>
+      </div>
+    </div>
+    <div class="table-scroll"><table id="cmp-table"><caption class="sr-only">Side by side comparison</caption></table></div>
+  </section>
+
+  <!-- ========================= FAVOURITES ========================= -->
+  <section class="view" id="view-favourites" hidden aria-labelledby="fav-h">
+    <div class="result-head">
+      <div>
+        <h1 id="fav-h">Saved games</h1>
+        <p style="color:var(--text-muted);margin:0">Stored in this browser only &mdash; nothing is uploaded anywhere.</p>
+      </div>
+      <button type="button" class="btn btn-ghost no-print" id="print-fav-btn"><span data-icon="printer" data-icon-size="18"></span> Print / save PDF</button>
+    </div>
+    <div class="grid" id="fav-grid" style="margin-top:22px"></div>
+  </section>
+
+  <!-- ========================= ABOUT ========================= -->
+  <section class="view" id="view-about" hidden aria-labelledby="about-h">
+    <h1 id="about-h">About this tool</h1>
+    <div class="prose" style="color:var(--text-muted)">
+      <p>This finder grew out of a Para Esports competition that brought together students with disability from
+         four schools to play <strong>Mario Kart 8 Deluxe</strong> on Nintendo Switch. The day was not really about
+         the game &mdash; it was about social connection, communication, teamwork, friendly competition and students
+         feeling like they belonged. The right game choice is what made that possible.</p>
+
+      <h3 style="color:var(--text)">How the recommendations work</h3>
+      <p>Nothing here is a simple filter. Every game carries weighted scores against each criterion in the finder.
+         Your answers become weights, and each game earns a percentage match:</p>
+      <ul>
+        <li><strong>Platform</strong> &mdash; weighted heaviest. A perfect game you cannot run is not a recommendation.</li>
+        <li><strong>Primary goal</strong> and <strong>student needs</strong> &mdash; weighted next, because they drive
+            whether students can actually take part.</li>
+        <li><strong>Budget, group size, game style and event type</strong> &mdash; weighted lower, as practical fit.</li>
+      </ul>
+      <p>Games are then split into your <strong>best match</strong>, <strong>excellent alternatives</strong> and
+         <strong>honourable mentions</strong>, and each card explains the specific reasons it scored well for
+         <em>your</em> answers.</p>
+
+      <h3 style="color:var(--text)">The department position on game titles</h3>
+      <p>Every card shows where the game sits against the Queensland Department of Education's assessed list:</p>
+      <ul>
+        <li><strong>Permitted for use</strong> &mdash; assessed and permitted, subject to local decision making
+            by the school.</li>
+        <li><strong>Not yet assessed</strong> &mdash; not on the department's list. Several of the strongest
+            inclusive titles sit here (Minecraft, Overcooked! 2, Moving Out). They are not prohibited: self-assess
+            them against the department position using the flowchart in the
+            <a href="https://catalogue.qlearn.eq.edu.au/browse/education-futures-institute/courses/esports-in-schools-supporting-the-implementation-of-school-esports-programs"
+               target="_blank" rel="noopener">Esports in Schools QLearn course</a>.</li>
+        <li><strong>Not permitted</strong> &mdash; Call of Duty, Counter-Strike 2 and Rainbow Six. These are
+            excluded from this database entirely and can never be recommended by the finder.</li>
+      </ul>
+      <p>The <strong>Department-permitted only</strong> toggle on the results and All games screens is
+         <strong>on by default</strong>, so you only ever see assessed titles unless you deliberately widen the
+         search. Turn it off to include the not-yet-assessed games your school can self-assess &mdash; the setting
+         is remembered on that device. The department's permitted list also includes titles this database
+         deliberately leaves out &mdash; Fortnite, VALORANT, League of Legends and similar &mdash; because they are a
+         poor fit for the inclusive settings this tool is built for. Searching for one will tell you its status.</p>
+      <p>The lists are stored in <code>DEPT_PERMITTED</code> and <code>DEPT_NOT_PERMITTED</code> near the top of the
+         file; update them when the department publishes a revision and every card re-flags itself automatically.</p>
+
+      <h3 style="color:var(--text)">Using it at your school</h3>
+      <ul>
+        <li>Treat the "suggested school settings" as your starting configuration &mdash; they remove most of the
+            skill gap before the first round is played.</li>
+        <li>Run a practice round that does not count. Confidence is built before the competition starts.</li>
+        <li>Mixed-ability teams beat individual ladders for most inclusive events.</li>
+        <li>Check your school's device, network and classification policies before purchasing.</li>
+      </ul>
+
+      <h3 style="color:var(--text)">Accuracy and reuse</h3>
+      <p>Each card shows the publisher's own promotional key art, stored in the <code>images</code> folder beside
+         this file so the app still works with no internet connection. Those images remain the property of their
+         respective publishers and are used here only to identify the game &mdash; they are not covered by the
+         permission to reuse this tool. If that does not suit your school, delete the <code>images</code> folder:
+         every card falls back to the original vector illustration drawn for this tool, and nothing else breaks.</p>
+      <p>Prices are indicative Australian recommended retail prices and change often, especially during sales.
+         Age guidance is a classroom recommendation, not a formal classification. This tool is free to copy,
+         adapt and host at your own school &mdash; it is a single HTML file with no tracking, no accounts and no
+         internet connection required once saved.</p>
+      <p class="note" style="color:var(--text)">Presented at the Queensland Department of Education ITD Conference.
+         Adapt the game database at the top of the file to suit your own context.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p><strong>Inclusive Esports Game Finder</strong> &mdash; a free resource for educators building inclusive esports programs.</p>
+    <p>Works offline. No accounts, no tracking, no data leaves your device.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ============================================================================
+   1. GAME DATABASE
+   ----------------------------------------------------------------------------
+   Every game is scored 0-5 against each criterion the wizard asks about.
+   To add a game: copy a block, keep every key, and adjust the scores.
+     goals      - how well it serves each primary goal
+     needs      - how well it accommodates each student need
+     playerFit  - how well it works at each group size
+     events     - how well it suits each event type
+     platforms  - 'switch' | 'pc' | 'xbox' | 'playstation'
+     styles     - matches the "preferred game style" options
+     cost       - approximate AUD per copy, 0 = free to play
+   ========================================================================== */
+const GAMES = [
+{
+  id:"mk8", title:"Mario Kart 8 Deluxe", art:"track", c1:"#ff8a3d", c2:"#e02f6b", image:"images/mk8.jpg",
+  genre:"Kart racing", platforms:["switch"], cost:79, costLabel:"~$79 one-off",
+  playersLabel:"1–4 per console (8 across two consoles)",
+  complexity:1, access:5, ages:"6+ (G)", length:"4–6 min per race",
+  internet:false, offline:true,
+  blurb:"The benchmark inclusive esports title. Assist options let a first-time player finish a race beside an experienced one, and every race is over quickly enough to keep a whole room engaged.",
+  styles:["racing","party"],
+  goals:{social:5,competition:5,teamwork:4,communication:3,physical:1,strategy:3,creativity:1,confidence:5,lunchtime:5,formal:5},
+  needs:{simpleControls:5,fineMotor:5,intellectual:5,autism:4,commSupport:5,attention:5,mixedAbilities:5,experienced:4,beginners:5},
+  playerFit:{2:5,4:5,8:4,16:3,rotating:5},
+  events:{casual:5,lunchtime:5,house:5,regional:5,inclusivePE:2,classroom:3},
+  features:["Smart Steering keeps karts on track","Auto-Accelerate removes the accelerate button","Motion or button steering","Team racing mode","No reading required to play","Single Joy-Con play (two buttons)"],
+  settings:["Engine class: 50cc","Smart Steering: ON","Auto-Accelerate: ON","Teams: enabled, mixed ability","Course: short, familiar cups (Mushroom Cup)","Run one practice race that does not count","Items ON — they close the gap between skill levels"]
+},
+{
+  id:"switchsports", title:"Nintendo Switch Sports", art:"motion", c1:"#38b6ff", c2:"#1e6fd9", image:"images/switchsports.jpg",
+  genre:"Motion sports", platforms:["switch"], cost:59, costLabel:"~$59 one-off",
+  playersLabel:"1–4 per console (more via rotation)",
+  complexity:1, access:4, ages:"6+ (G)", length:"3–8 min per match",
+  internet:false, offline:true,
+  blurb:"Movement-based sport that reads as PE rather than gaming. Bowling in particular works seated, standing or with support, and scoring is instantly understood by everyone watching.",
+  styles:["sports","party"],
+  goals:{social:5,competition:4,teamwork:4,communication:3,physical:5,strategy:2,creativity:1,confidence:5,lunchtime:4,formal:3},
+  needs:{simpleControls:5,fineMotor:3,intellectual:5,autism:3,commSupport:4,attention:5,mixedAbilities:5,experienced:2,beginners:5},
+  playerFit:{2:5,4:5,8:3,16:2,rotating:5},
+  events:{casual:5,lunchtime:4,house:4,regional:2,inclusivePE:5,classroom:3},
+  features:["Motion controls with adjustable sensitivity","Bowling playable seated","Bumpers and ramp assists in bowling","Short, self-explanatory rounds","Leg strap optional, never required"],
+  settings:["Start with Bowling — most inclusive event","Bumpers: ON for mixed groups","Play seated where standing is tiring","Teams of two so nobody plays alone","Turn off online play for school sessions"]
+},
+{
+  id:"minecraft", title:"Minecraft", art:"blocks", c1:"#57b85c", c2:"#2b6c3a", image:"images/minecraft.jpg",
+  genre:"Sandbox / creative", platforms:["switch","pc","xbox","playstation"], cost:30, costLabel:"~$30 (Education edition often licensed already)",
+  playersLabel:"2–30+ on a shared world",
+  complexity:3, access:3, ages:"7+ (PG)", length:"20–60 min sessions",
+  internet:false, offline:true,
+  blurb:"The most flexible option on this list. A shared world gives every student a role that matches their capability, from building to gathering to guiding, with no losing condition at all.",
+  styles:["sandbox","puzzle","strategy"],
+  goals:{social:4,competition:2,teamwork:5,communication:5,physical:1,strategy:4,creativity:5,confidence:4,lunchtime:4,formal:2},
+  needs:{simpleControls:3,fineMotor:2,intellectual:3,autism:5,commSupport:3,attention:2,mixedAbilities:4,experienced:5,beginners:3},
+  playerFit:{2:5,4:5,8:5,16:4,rotating:3},
+  events:{casual:5,lunchtime:5,house:3,regional:2,inclusivePE:1,classroom:5},
+  features:["Peaceful mode removes all threats","No fail state or time pressure","Creative mode removes resource pressure","Text and voice chat both optional","Education Edition adds classroom controls","Highly customisable difficulty"],
+  settings:["Difficulty: Peaceful","Mode: Creative for first sessions","One shared world, LAN not internet","Set a single cooperative build brief","Assign roles: builder, gatherer, planner, guide","Chat disabled unless supervised"]
+},
+{
+  id:"rocketleague", title:"Rocket League", art:"ball", c1:"#3d7bff", c2:"#8b2fd9", image:"images/rocketleague.jpg",
+  genre:"Vehicular soccer", platforms:["switch","pc","xbox","playstation"], cost:0, costLabel:"Free to play",
+  playersLabel:"2–8 (1v1 to 4v4)",
+  complexity:4, access:3, ages:"8+ (G)", length:"5 min per match",
+  internet:true, offline:true,
+  blurb:"A genuine competitive esport that is free on every platform. Demanding controls make it a poor first choice for beginners, but it is unmatched for an experienced squad wanting a real ladder.",
+  styles:["sports","racing"],
+  goals:{social:4,competition:5,teamwork:5,communication:5,physical:1,strategy:4,creativity:2,confidence:3,lunchtime:4,formal:5},
+  needs:{simpleControls:2,fineMotor:1,intellectual:2,autism:3,commSupport:3,attention:4,mixedAbilities:2,experienced:5,beginners:2},
+  playerFit:{2:5,4:5,8:4,16:3,rotating:4},
+  events:{casual:4,lunchtime:5,house:5,regional:5,inclusivePE:1,classroom:2},
+  features:["Fully remappable controls","Camera and sensitivity options","Colour-blind friendly team colours","Quick-chat presets replace voice chat","Bots can fill teams","Free on every platform"],
+  settings:["Start in Exhibition vs bots (Rookie)","3v3 — more forgiving than 1v1","Quick chat only, voice chat off","Disable in-game item store access","Five-minute matches keep rotation moving"]
+},
+{
+  id:"fallguys", title:"Fall Guys", art:"obstacle", c1:"#ff5fa2", c2:"#7d3ce0", image:"images/fallguys.jpg",
+  genre:"Party obstacle course", platforms:["switch","pc","xbox","playstation"], cost:0, costLabel:"Free to play",
+  playersLabel:"Up to 4 per console, dozens online",
+  complexity:2, access:3, ages:"7+ (PG)", length:"3–8 min per show",
+  internet:true, offline:false,
+  blurb:"Being eliminated is funny rather than crushing, which makes it forgiving for anxious players. Requires internet, so check your school network before committing to it for an event.",
+  styles:["party","platformer"],
+  goals:{social:5,competition:4,teamwork:3,communication:2,physical:1,strategy:2,creativity:1,confidence:4,lunchtime:5,formal:3},
+  needs:{simpleControls:5,fineMotor:3,intellectual:4,autism:3,commSupport:5,attention:5,mixedAbilities:5,experienced:3,beginners:5},
+  playerFit:{2:4,4:5,8:5,16:5,rotating:5},
+  events:{casual:5,lunchtime:5,house:4,regional:3,inclusivePE:1,classroom:2},
+  features:["Run and jump only — two inputs","No combat or confrontation","Losing is low stakes and comic","Free on every platform","Local split-screen on console"],
+  settings:["Custom lobby so only your students play","Text chat disabled","Set a house-team scoring system across rounds","Warn students rounds are short — they rejoin fast","Check the school firewall well before the event"]
+},
+{
+  id:"overcooked2", title:"Overcooked! 2", art:"kitchen", c1:"#ff9f43", c2:"#e0473c", image:"images/overcooked2.jpg",
+  genre:"Cooperative chaos", platforms:["switch","pc","xbox","playstation"], cost:39, costLabel:"~$39 one-off",
+  playersLabel:"1–4 local",
+  complexity:3, access:4, ages:"7+ (G)", length:"4 min per level",
+  internet:false, offline:true,
+  blurb:"The best communication exercise on this list. Students must talk, plan and allocate roles or the kitchen fails — and the Assist Mode makes that possible for almost any group.",
+  styles:["coop","party"],
+  goals:{social:4,competition:2,teamwork:5,communication:5,physical:1,strategy:4,creativity:1,confidence:3,lunchtime:4,formal:2},
+  needs:{simpleControls:4,fineMotor:3,intellectual:3,autism:2,commSupport:2,attention:4,mixedAbilities:4,experienced:4,beginners:4},
+  playerFit:{2:5,4:5,8:3,16:2,rotating:4},
+  events:{casual:4,lunchtime:4,house:3,regional:2,inclusivePE:1,classroom:5},
+  features:["Assist Mode: longer timers, extra tips","Order patience can be extended","Recipes simplified in Assist Mode","Drop-in, drop-out local play","No reading-heavy interface"],
+  settings:["Assist Mode: ON","Pairs before fours — less overwhelming","Pre-assign roles: chopper, cook, plater, runner","Replay the same level to show visible improvement","Debrief what communication worked"]
+},
+{
+  id:"justdance", title:"Just Dance", art:"rhythm", c1:"#ff4fd8", c2:"#3d5bff", image:"images/justdance.jpg",
+  genre:"Rhythm / movement", platforms:["switch","xbox","playstation"], cost:79, costLabel:"~$79 (song subscription optional)",
+  playersLabel:"1–6 with phones or controllers",
+  complexity:1, access:4, ages:"6+ (G)", length:"3–4 min per song",
+  internet:false, offline:true,
+  blurb:"Participation matters more than accuracy. Students in wheelchairs, with limited mobility or with no gaming experience can all score by moving one arm in time.",
+  styles:["rhythm","party"],
+  goals:{social:5,competition:3,teamwork:3,communication:2,physical:5,strategy:1,creativity:3,confidence:5,lunchtime:4,formal:3},
+  needs:{simpleControls:5,fineMotor:4,intellectual:5,autism:2,commSupport:5,attention:5,mixedAbilities:5,experienced:2,beginners:5},
+  playerFit:{2:5,4:5,8:4,16:4,rotating:5},
+  events:{casual:5,lunchtime:4,house:4,regional:2,inclusivePE:5,classroom:3},
+  features:["Only the tracked hand is scored","Playable seated","Phone app works as a controller","Kids Mode with gentler routines","No reading required","Visible, immediate feedback"],
+  settings:["Seated play is fully valid — score still counts","Kids Mode for younger or sensory-sensitive groups","Volume down and lights up if sensory load is high","Pick familiar songs students already know","Group routines instead of individual scoring"]
+},
+{
+  id:"mariowonder", title:"Super Mario Bros. Wonder", art:"platform", c1:"#ffcf3d", c2:"#f0603c", image:"images/mariowonder.jpg",
+  genre:"Cooperative platformer", platforms:["switch"], cost:79, costLabel:"~$79 one-off",
+  playersLabel:"1–4 local",
+  complexity:2, access:5, ages:"6+ (G)", length:"3–5 min per level",
+  internet:false, offline:true,
+  blurb:"Built-in difficulty scaling without a difficulty menu: Yoshi and Nabbit cannot take damage, so a student who needs support plays the same level as everyone else and still contributes.",
+  styles:["platformer","coop"],
+  goals:{social:4,competition:2,teamwork:4,communication:4,physical:1,strategy:2,creativity:2,confidence:5,lunchtime:4,formal:2},
+  needs:{simpleControls:5,fineMotor:4,intellectual:4,autism:4,commSupport:4,attention:5,mixedAbilities:5,experienced:4,beginners:5},
+  playerFit:{2:5,4:5,8:2,16:1,rotating:4},
+  events:{casual:5,lunchtime:5,house:2,regional:1,inclusivePE:1,classroom:4},
+  features:["Yoshi and Nabbit take no damage","Badges add auto-parachute, extra jumps and more","Players revive each other automatically","Standee checkpoints from other players","Single Joy-Con play"],
+  settings:["Assign Yoshi to students who need support","Badge: Parachute Cap or Safety Bounce","Play the easier early worlds (1 and 2)","Four players so nobody is watching","Celebrate level completion, not score"]
+},
+{
+  id:"lego", title:"LEGO games (Skywalker Saga, 2K Drive, etc.)", art:"brick", c1:"#ffd23d", c2:"#e0342f", image:"images/lego.jpg",
+  genre:"Cooperative adventure", platforms:["switch","pc","xbox","playstation"], cost:39, costLabel:"~$39 (frequently discounted)",
+  playersLabel:"1–2 local (drop in, drop out)",
+  complexity:2, access:4, ages:"7+ (PG)", length:"15–30 min sessions",
+  internet:false, offline:true,
+  blurb:"Almost impossible to fail: characters respawn instantly at no cost. Excellent for building confidence in students who find losing distressing, and the humour lands with every age group.",
+  styles:["coop","platformer","puzzle"],
+  goals:{social:4,competition:1,teamwork:5,communication:4,physical:1,strategy:2,creativity:4,confidence:5,lunchtime:4,formal:1},
+  needs:{simpleControls:5,fineMotor:4,intellectual:5,autism:5,commSupport:4,attention:4,mixedAbilities:5,experienced:3,beginners:5},
+  playerFit:{2:5,4:2,8:1,16:1,rotating:4},
+  events:{casual:5,lunchtime:4,house:1,regional:1,inclusivePE:1,classroom:4},
+  features:["No permanent failure — instant respawn","Drop-in / drop-out second player","Free Play removes all pressure","Familiar characters lower the entry barrier","Simple two-button interactions"],
+  settings:["Free Play mode once a level is unlocked","Pair a confident player with a beginner","Set a shared collection goal, not a race","Turn subtitles on","Short 20-minute sessions"]
+},
+{
+  id:"boomerangfu", title:"Boomerang Fu", art:"party", c1:"#7bd85f", c2:"#0f9e8c", image:"images/boomerangfu.jpg",
+  genre:"Party brawler", platforms:["switch","pc","xbox","playstation"], cost:18, costLabel:"~$18 one-off",
+  playersLabel:"2–6 local",
+  complexity:2, access:4, ages:"7+ (PG)", length:"1–2 min per round",
+  internet:false, offline:true,
+  blurb:"Rounds so short that nobody sits out for long. Cheap, cheerful and ideal for a lunchtime club where students drift in and out on a rotation.",
+  styles:["party"],
+  goals:{social:5,competition:4,teamwork:3,communication:2,physical:1,strategy:2,creativity:1,confidence:4,lunchtime:5,formal:2},
+  needs:{simpleControls:5,fineMotor:3,intellectual:4,autism:3,commSupport:5,attention:5,mixedAbilities:4,experienced:4,beginners:4},
+  playerFit:{2:4,4:5,8:4,16:3,rotating:5},
+  events:{casual:5,lunchtime:5,house:3,regional:2,inclusivePE:1,classroom:2},
+  features:["One-button throw","Rounds last under two minutes","Cartoon food characters, no realistic violence","Team mode available","Adjustable round count"],
+  settings:["Teams: 2v2 or 3v3","Round limit: first to 5","Turn power-ups on to level the field","Rotate the loser out to keep everyone playing"]
+},
+{
+  id:"movingout", title:"Moving Out", art:"boxes", c1:"#5fc9f0", c2:"#f06a3d", image:"images/movingout.jpg",
+  genre:"Cooperative puzzle", platforms:["switch","pc","xbox","playstation"], cost:35, costLabel:"~$35 one-off",
+  playersLabel:"1–4 local",
+  complexity:2, access:5, ages:"7+ (G)", length:"5–8 min per level",
+  internet:false, offline:true,
+  blurb:"The strongest accessibility toolkit in this list. Assist Mode lets you remove the timer entirely, make objects weightless, shrink furniture or skip a level outright — configurable per group, not per player skill.",
+  styles:["coop","puzzle"],
+  goals:{social:4,competition:1,teamwork:5,communication:5,physical:1,strategy:3,creativity:1,confidence:4,lunchtime:4,formal:1},
+  needs:{simpleControls:5,fineMotor:4,intellectual:4,autism:4,commSupport:3,attention:4,mixedAbilities:5,experienced:3,beginners:5},
+  playerFit:{2:5,4:5,8:2,16:1,rotating:4},
+  events:{casual:5,lunchtime:4,house:2,regional:1,inclusivePE:1,classroom:5},
+  features:["Assist Mode: unlimited time","Assist Mode: lighter and smaller objects","Assist Mode: skip any level","Doors can be walked through","Colour-blind friendly markers"],
+  settings:["Assist Mode: ON, timer disabled","Object weight: reduced","Pairs, then combine into fours","Talk through the plan before starting a level","Skip any level causing frustration"]
+},
+{
+  id:"goose", title:"Untitled Goose Game", art:"nature", c1:"#a8d86a", c2:"#4b8c3a", image:"images/goose.jpg",
+  genre:"Puzzle sandbox", platforms:["switch","pc","xbox","playstation"], cost:30, costLabel:"~$30 one-off",
+  playersLabel:"1–2 local",
+  complexity:2, access:3, ages:"7+ (G)", length:"10–20 min per area",
+  internet:false, offline:true,
+  blurb:"A gentle, funny problem-solving game with no time limits and no failure. Works well as a paired classroom activity where students discuss what to try next.",
+  styles:["puzzle","sandbox"],
+  goals:{social:3,competition:1,teamwork:4,communication:5,physical:1,strategy:4,creativity:3,confidence:4,lunchtime:3,formal:1},
+  needs:{simpleControls:4,fineMotor:3,intellectual:3,autism:4,commSupport:3,attention:3,mixedAbilities:3,experienced:3,beginners:4},
+  playerFit:{2:5,4:1,8:1,16:1,rotating:2},
+  events:{casual:4,lunchtime:3,house:1,regional:1,inclusivePE:1,classroom:4},
+  features:["No fail state and no timer","Two-player co-op goose","Visual to-do list, minimal text","Calm pace and soundtrack","Nothing to lose or reset"],
+  settings:["Two players sharing one goal","Project onto the board for a whole-class puzzle","Use the in-game list as the task sequence","Let students take turns holding the controller"]
+},
+{
+  id:"gangbeasts", title:"Gang Beasts", art:"wobble", c1:"#f0803d", c2:"#9e2f4f", image:"images/gangbeasts.jpg",
+  genre:"Physics party brawler", platforms:["switch","pc","xbox","playstation"], cost:25, costLabel:"~$25 one-off",
+  playersLabel:"2–8 local",
+  complexity:3, access:3, ages:"12+ (M — slapstick violence)", length:"1–3 min per round",
+  internet:false, offline:true,
+  blurb:"Wobbly, slapstick and very funny, with skill mattering less than luck — which is exactly why mixed groups enjoy it. Check the classification suits your cohort before using it.",
+  styles:["party"],
+  goals:{social:5,competition:4,teamwork:3,communication:3,physical:1,strategy:1,creativity:1,confidence:3,lunchtime:4,formal:1},
+  needs:{simpleControls:4,fineMotor:2,intellectual:3,autism:2,commSupport:4,attention:5,mixedAbilities:3,experienced:3,beginners:3},
+  playerFit:{2:4,4:5,8:4,16:2,rotating:5},
+  events:{casual:5,lunchtime:4,house:3,regional:1,inclusivePE:1,classroom:1},
+  features:["Deliberately imprecise controls level the field","Team mode available","Short rounds, fast re-entry","No blood or realistic injury"],
+  settings:["Teams mode to reduce pile-ons","Choose flat, hazard-free stages","Round limit: 5","Confirm the classification suits your students"]
+},
+{
+  id:"cakebash", title:"Cake Bash", art:"cake", c1:"#ffb3d1", c2:"#f0713d", image:"images/cakebash.jpg",
+  genre:"Party minigames", platforms:["switch","pc","xbox","playstation"], cost:25, costLabel:"~$25 one-off",
+  playersLabel:"1–4 local",
+  complexity:2, access:4, ages:"6+ (G)", length:"2–4 min per minigame",
+  internet:false, offline:true,
+  blurb:"Bright, warm and completely non-threatening. Many minigames reward timing or luck rather than dexterity, so the winner changes constantly across a session.",
+  styles:["party"],
+  goals:{social:5,competition:4,teamwork:3,communication:3,physical:1,strategy:2,creativity:2,confidence:4,lunchtime:5,formal:2},
+  needs:{simpleControls:5,fineMotor:4,intellectual:5,autism:4,commSupport:5,attention:5,mixedAbilities:5,experienced:2,beginners:5},
+  playerFit:{2:4,4:5,8:3,16:2,rotating:5},
+  events:{casual:5,lunchtime:5,house:3,regional:1,inclusivePE:1,classroom:2},
+  features:["Very short, self-contained minigames","Mostly one or two buttons","Gentle art style, no violence","Choose which minigames are in the rotation"],
+  settings:["Hand-pick 4 minigames that suit the group","Skip any that need fast repeated presses","Play as a points tournament across rounds","Four players every round"]
+},
+{
+  id:"rubberbandits", title:"Rubber Bandits", art:"loot", c1:"#ff6f3d", c2:"#8a2fd9", image:"images/rubberbandits.jpg",
+  genre:"Party heist brawler", platforms:["switch","pc","xbox","playstation"], cost:20, costLabel:"~$20 one-off",
+  playersLabel:"2–4 local",
+  complexity:2, access:3, ages:"7+ (PG)", length:"3–5 min per heist",
+  internet:false, offline:true,
+  blurb:"A cheaper party option with a shared objective — grab the loot and escape — which gives lower-skilled players a job that still matters to the result.",
+  styles:["party"],
+  goals:{social:5,competition:4,teamwork:4,communication:4,physical:1,strategy:2,creativity:1,confidence:4,lunchtime:5,formal:2},
+  needs:{simpleControls:5,fineMotor:3,intellectual:4,autism:3,commSupport:4,attention:5,mixedAbilities:4,experienced:3,beginners:4},
+  playerFit:{2:4,4:5,8:2,16:1,rotating:5},
+  events:{casual:5,lunchtime:5,house:3,regional:2,inclusivePE:1,classroom:1},
+  features:["Simple grab-and-run objective","Team heist mode","Cartoon violence only","Short rounds"],
+  settings:["Team mode: 2v2","Set a shared loot target","Rotate teams every three heists"]
+},
+{
+  id:"trackmania", title:"Trackmania", art:"circuit", c1:"#3dd6a3", c2:"#1f6fd9", image:"images/trackmania.jpg",
+  genre:"Time-trial racing", platforms:["pc"], cost:0, costLabel:"Free (Starter access)",
+  playersLabel:"Unlimited — everyone races the same track",
+  complexity:2, access:4, ages:"7+ (G)", length:"30–60 seconds per attempt",
+  internet:true, offline:false,
+  blurb:"Four inputs and no opponents to crash into: students race the clock, not each other. The best option for a large PC lab where everyone needs to play at once.",
+  styles:["racing"],
+  goals:{social:3,competition:5,teamwork:2,communication:2,physical:1,strategy:3,creativity:4,confidence:4,lunchtime:4,formal:5},
+  needs:{simpleControls:5,fineMotor:3,intellectual:3,autism:5,commSupport:5,attention:5,mixedAbilities:4,experienced:5,beginners:4},
+  playerFit:{2:5,4:5,8:5,16:5,rotating:5},
+  events:{casual:4,lunchtime:5,house:5,regional:5,inclusivePE:1,classroom:4},
+  features:["Four inputs: accelerate, brake, left, right","Instant restart with one key","No contact with other players","Personal-best focus rather than head-to-head","Built-in track editor for student design"],
+  settings:["Pick a short, flat official track","Score on personal improvement, not the leaderboard","Run a 10-minute open practice first","Students design a track as an extension activity","Requires accounts and internet — set up ahead of time"]
+},
+{
+  id:"humanfallflat", title:"Human: Fall Flat", art:"wobble", c1:"#8fb8d9", c2:"#4a5f8c", image:"images/humanfallflat.jpg",
+  genre:"Cooperative physics puzzle", platforms:["switch","pc","xbox","playstation"], cost:25, costLabel:"~$25 one-off",
+  playersLabel:"1–8 (2–4 works best)",
+  complexity:3, access:3, ages:"7+ (G)", length:"15–25 min per level",
+  internet:true, offline:true,
+  blurb:"Problem-solving where the wobbly controls are part of the joke. Groups must talk constantly to solve a puzzle, and there is no way to lose.",
+  styles:["coop","puzzle","platformer"],
+  goals:{social:4,competition:1,teamwork:5,communication:5,physical:1,strategy:4,creativity:3,confidence:3,lunchtime:4,formal:1},
+  needs:{simpleControls:4,fineMotor:2,intellectual:2,autism:3,commSupport:2,attention:3,mixedAbilities:3,experienced:4,beginners:3},
+  playerFit:{2:5,4:5,8:4,16:2,rotating:3},
+  events:{casual:4,lunchtime:4,house:2,regional:1,inclusivePE:1,classroom:3},
+  features:["No fail state, no timer","Instant respawn at checkpoints","Drop-in / drop-out play","Multiple solutions to every puzzle"],
+  settings:["Groups of three or four","Start on the first level (Mansion)","Ask groups to explain their plan aloud","No time limit — completion is the goal"]
+},
+{
+  id:"picopark", title:"Pico Park", art:"platform", c1:"#5fd0f0", c2:"#2f5fd9", image:"images/picopark.jpg",
+  genre:"Cooperative puzzle", platforms:["switch","pc"], cost:12, costLabel:"~$12 one-off",
+  playersLabel:"2–8 local",
+  complexity:1, access:4, ages:"6+ (G)", length:"2–5 min per level",
+  internet:false, offline:true,
+  blurb:"Two buttons, and every single level is impossible unless the whole group cooperates. The cheapest and clearest teamwork lesson available.",
+  styles:["coop","puzzle","platformer"],
+  goals:{social:5,competition:1,teamwork:5,communication:5,physical:1,strategy:3,creativity:1,confidence:4,lunchtime:5,formal:1},
+  needs:{simpleControls:5,fineMotor:5,intellectual:4,autism:3,commSupport:2,attention:4,mixedAbilities:5,experienced:3,beginners:5},
+  playerFit:{2:4,4:5,8:5,16:2,rotating:4},
+  events:{casual:5,lunchtime:5,house:2,regional:1,inclusivePE:1,classroom:5},
+  features:["Move and jump only","Every level requires cooperation","Very short levels","Extremely low price","Simple pixel visuals, low sensory load"],
+  settings:["Groups of four to six","Retry freely — levels reset instantly","Nominate a caller for each level","Debrief which strategies worked"]
+},
+{
+  id:"amongus", title:"Among Us", art:"crew", c1:"#f04f6a", c2:"#3d4fd9", image:"images/amongus.jpg",
+  genre:"Social deduction", platforms:["switch","pc","xbox","playstation"], cost:8, costLabel:"~$8 (free on mobile)",
+  playersLabel:"4–15 players",
+  complexity:2, access:3, ages:"9+ (PG)", length:"10–15 min per round",
+  internet:true, offline:false,
+  blurb:"The discussion is the activity — the game is just the prompt. Excellent for verbal reasoning and turn-taking, but demanding for students who find social inference or being accused difficult.",
+  styles:["strategy","party"],
+  goals:{social:5,competition:3,teamwork:4,communication:5,physical:1,strategy:5,creativity:1,confidence:3,lunchtime:5,formal:2},
+  needs:{simpleControls:4,fineMotor:4,intellectual:2,autism:2,commSupport:1,attention:3,mixedAbilities:3,experienced:3,beginners:4},
+  playerFit:{2:1,4:3,8:5,16:4,rotating:4},
+  events:{casual:5,lunchtime:5,house:3,regional:1,inclusivePE:1,classroom:3},
+  features:["Very simple movement and task controls","Private rooms with a join code","Colour-blind friendly player names","Adjustable task and speed settings","Discussion can be spoken in the room"],
+  settings:["Private room, code shared verbally","Discussion out loud, in-game chat off","Shorter discussion timer for younger groups","Set a class norm: no personal accusations","Consider a non-elimination variant"]
+},
+{
+  id:"eafc", title:"EA Sports FC", art:"ball", c1:"#2fbf6f", c2:"#123f8c", image:"images/eafc.jpg",
+  genre:"Football simulation", platforms:["switch","pc","xbox","playstation"], cost:109, costLabel:"~$109 new (heavily discounted later)",
+  playersLabel:"2–4 local, more via tournament rotation",
+  complexity:5, access:3, ages:"9+ (G)", length:"12–20 min per match",
+  internet:false, offline:true,
+  blurb:"Huge cultural pull with students who already follow football, and a proven format for a formal school competition. Controls are the most demanding on this list, so it is a poor fit for a mixed-ability first event.",
+  styles:["sports","strategy"],
+  goals:{social:3,competition:5,teamwork:4,communication:3,physical:1,strategy:5,creativity:2,confidence:2,lunchtime:3,formal:5},
+  needs:{simpleControls:1,fineMotor:1,intellectual:1,autism:3,commSupport:4,attention:3,mixedAbilities:1,experienced:5,beginners:1},
+  playerFit:{2:5,4:4,8:3,16:3,rotating:4},
+  events:{casual:3,lunchtime:4,house:4,regional:5,inclusivePE:1,classroom:1},
+  features:["Assisted controls for passing and shooting","Difficulty from Beginner to Legendary","Two-button control scheme available","Remappable controls","Match length adjustable to 4 minutes"],
+  settings:["Control scheme: Assisted / Two-button","Difficulty: Beginner","Half length: 4 minutes","Same team for both players to remove roster advantage","Run a knockout ladder over several lunchtimes"]
+},
+{
+  id:"smash", title:"Super Smash Bros. Ultimate", art:"clash", c1:"#ff6b4a", c2:"#2f4fd9", image:"images/smash.jpg",
+  genre:"Party fighter", platforms:["switch"], cost:79, costLabel:"~$79 one-off",
+  playersLabel:"2–8 local",
+  complexity:3, access:3, ages:"10+ (PG — cartoon fighting)", length:"3–5 min per match",
+  internet:false, offline:true,
+  blurb:"The most established school esports title on Switch. Handicaps, item settings and CPU difficulty can be tuned so a beginner is genuinely competitive, but the control depth still rewards experienced players.",
+  styles:["party","strategy"],
+  goals:{social:5,competition:5,teamwork:3,communication:3,physical:1,strategy:4,creativity:1,confidence:3,lunchtime:5,formal:5},
+  needs:{simpleControls:3,fineMotor:2,intellectual:2,autism:3,commSupport:5,attention:5,mixedAbilities:3,experienced:5,beginners:3},
+  playerFit:{2:5,4:5,8:5,16:3,rotating:5},
+  events:{casual:5,lunchtime:5,house:5,regional:5,inclusivePE:1,classroom:1},
+  features:["Per-player handicap settings","Item frequency adjustable","Stamina mode gives a visible health bar","CPU opponents from level 1 to 9","Single Joy-Con play","Custom rulesets saved and reused"],
+  settings:["Items: ON, high frequency — closes the skill gap","Stock: 3 lives, or 3-minute timed","Handicap: ON for mixed-ability matches","Stages: Battlefield or Final Destination (no hazards)","Stage hazards: OFF","Run a 10-minute free-play warm up first"]
+},
+{
+  id:"brawlhalla", title:"Brawlhalla", art:"clash", c1:"#ffb03d", c2:"#c02f8c", image:"images/brawlhalla.jpg",
+  genre:"Platform fighter", platforms:["switch","pc","xbox","playstation"], cost:0, costLabel:"Free to play",
+  playersLabel:"2–8 (local or online)",
+  complexity:2, access:3, ages:"8+ (PG — cartoon fighting)", length:"2–4 min per match",
+  internet:true, offline:true,
+  blurb:"A free, simpler alternative to Smash that runs on every platform including modest PCs. Cross-platform play makes it practical for a competition between schools with different equipment.",
+  styles:["party"],
+  goals:{social:5,competition:5,teamwork:3,communication:2,physical:1,strategy:3,creativity:1,confidence:4,lunchtime:5,formal:4},
+  needs:{simpleControls:4,fineMotor:2,intellectual:3,autism:3,commSupport:5,attention:5,mixedAbilities:4,experienced:5,beginners:4},
+  playerFit:{2:5,4:5,8:4,16:3,rotating:5},
+  events:{casual:5,lunchtime:5,house:4,regional:4,inclusivePE:1,classroom:1},
+  features:["Two attack buttons only","Free on every platform","Cross-platform play","Runs on low-spec PCs","Custom rooms with a private code","Test Features mode for practice"],
+  settings:["Private custom room, code shared verbally","2v2 teams for mixed groups","Stock: 3, short timer","Turn off in-game chat","Disable store access on shared accounts"]
+},
+{
+  id:"legobrawls", title:"LEGO Brawls", art:"brick", c1:"#ffd23d", c2:"#3d8ce0", image:"images/legobrawls.jpg",
+  genre:"Party brawler", platforms:["switch","pc","xbox","playstation"], cost:40, costLabel:"~$40 one-off",
+  playersLabel:"2–8 (local or online)",
+  complexity:2, access:4, ages:"7+ (G)", length:"2–3 min per round",
+  internet:true, offline:true,
+  blurb:"Bright, forgiving and built around a shared team objective rather than knocking individuals out. Characters respawn instantly, so a student who struggles is never sidelined for a whole round.",
+  styles:["party","platformer"],
+  goals:{social:5,competition:4,teamwork:4,communication:3,physical:1,strategy:2,creativity:3,confidence:4,lunchtime:5,formal:3},
+  needs:{simpleControls:5,fineMotor:3,intellectual:4,autism:3,commSupport:5,attention:5,mixedAbilities:4,experienced:3,beginners:5},
+  playerFit:{2:4,4:5,8:4,16:2,rotating:5},
+  events:{casual:5,lunchtime:5,house:3,regional:2,inclusivePE:1,classroom:1},
+  features:["One attack button","Instant respawn — nobody sits out","Team-based objectives, not eliminations","Character customisation builds ownership","Familiar LEGO presentation"],
+  settings:["Team modes rather than free-for-all","Local play where possible","Let students build their minifigure first — it settles the group","Short rounds, rotate teams often"]
+},
+{
+  id:"gt7", title:"Gran Turismo 7", art:"circuit", c1:"#3d9ce0", c2:"#1f2f6b", image:"images/gt7.jpg",
+  genre:"Racing simulation", platforms:["playstation"], cost:124, costLabel:"~$124 new (often discounted)",
+  playersLabel:"1–2 split screen, more via rotation",
+  complexity:3, access:4, ages:"6+ (G)", length:"5–10 min per race",
+  internet:false, offline:true,
+  blurb:"The strongest accessibility toolkit of any driving game: steering assist, auto brake and the racing line can be layered on until any student can complete a clean lap, then peeled back as confidence grows.",
+  styles:["racing","sports"],
+  goals:{social:3,competition:5,teamwork:2,communication:2,physical:1,strategy:4,creativity:2,confidence:3,lunchtime:3,formal:5},
+  needs:{simpleControls:3,fineMotor:3,intellectual:2,autism:4,commSupport:5,attention:3,mixedAbilities:3,experienced:5,beginners:3},
+  playerFit:{2:5,4:2,8:2,16:2,rotating:4},
+  events:{casual:4,lunchtime:3,house:4,regional:5,inclusivePE:1,classroom:2},
+  features:["Steering assist and countersteering assist","Auto brake at corners","Driving line overlay","Traction and stability control","Adjustable AI difficulty","Wheel, pad and adaptive controller support"],
+  settings:["All driving assists: ON to start","Driving line: ON","Auto brake: ON, strength high","Short circuit, 3 laps maximum","Time trial for solo students — race the clock, not each other","Turn assists down one at a time as students improve"]
+}
+];
+
+/* ----------------------------------------------------------------------------
+   QUEENSLAND DEPARTMENT OF EDUCATION POSITION
+   ----------------------------------------------------------------------------
+   Titles assessed against the department position. Games are matched by exact
+   title, so adding a game whose title appears below is flagged automatically.
+   Update these two lists when the department publishes a revision.
+   -------------------------------------------------------------------------- */
+const DEPT_PERMITTED = [
+  "Age of Empires: Definitive Edition","Assetto Corsa","Brawlhalla","Brawlout","Dota 2",
+  "F1 2018","Fall Guys","Farming Simulator","FIFA 23","Fortnite","Gran Turismo 7","Just Dance",
+  "LEGO Brawls","League of Legends","Mario Kart 8 Deluxe","NBA 2K23","Overwatch 2","Rocket League",
+  "ShootMania Storm","StarCraft II","Street Fighter V","Super Smash Bros. Ultimate","The FINALS",
+  "VALORANT","Warcraft III: Reforged","Warsow"
+];
+const DEPT_NOT_PERMITTED = ["Call of Duty","Counter-Strike 2","Rainbow Six"];
+
+/* Extra context for titles that sit close to an assessed title but are not it. */
+const DEPT_NOTES = {
+  eafc:"FIFA 23 and NBA 2K23 are permitted. EA Sports FC is the successor to FIFA and is not separately listed — confirm locally before purchase.",
+  lego:"LEGO Brawls is permitted. The LEGO co-op adventure games are not separately listed.",
+  trackmania:"ShootMania Storm and Warsow are permitted. Trackmania is not separately listed."
+};
+
+/* Stamp every game with its department status. */
+GAMES.forEach(function(g){
+  g.dept = DEPT_PERMITTED.indexOf(g.title) > -1 ? "permitted"
+         : (DEPT_NOT_PERMITTED.indexOf(g.title) > -1 ? "notPermitted" : "unlisted");
+  g.deptNote = DEPT_NOTES[g.id] || null;
+});
+
+const DEPT_INFO = {
+  permitted:{label:"Permitted for use",short:"Dept. permitted",icon:"shield",
+    detail:"Assessed by the department and permitted, subject to local decision making by the school."},
+  notPermitted:{label:"Not permitted for use",short:"Not permitted",icon:"ban",
+    detail:"Assessed by the department and not permitted for use in schools."},
+  unlisted:{label:"Not yet assessed",short:"Local assessment",icon:"clipboard",
+    detail:"Not on the department's assessed list. Self-assess it against the department position using the flowchart in the Esports in Schools QLearn course before use."}
+};
+
+/* ============================================================================
+   2. WIZARD DEFINITION
+   ========================================================================== */
+const STEPS = [
+{
+  id:"goal", key:"goal", multi:false,
+  title:"What is your main goal?",
+  hint:"Pick the single outcome that matters most for this group. You can always run the finder again for a different goal.",
+  options:[
+    {v:"social",label:"Social connection", icon:"users2",sub:"Students playing together"},
+    {v:"competition",label:"Friendly competition", icon:"trophy",sub:"Scores, ladders, rivalry"},
+    {v:"teamwork",label:"Teamwork", icon:"puzzle",sub:"A shared goal to reach"},
+    {v:"communication",label:"Communication", icon:"chat",sub:"Talking, planning, listening"},
+    {v:"physical",label:"Physical activity", icon:"activity",sub:"Movement-based play"},
+    {v:"strategy",label:"Strategic thinking", icon:"chess",sub:"Planning and problem solving"},
+    {v:"creativity",label:"Creativity", icon:"palette",sub:"Building and making"},
+    {v:"confidence",label:"Confidence building", icon:"sparkle",sub:"Early wins, low pressure"},
+    {v:"lunchtime",label:"Lunchtime club", icon:"apple",sub:"Drop-in, short sessions"},
+    {v:"formal",label:"Formal competition", icon:"medal",sub:"A structured esports event"}
+  ]
+},
+{
+  id:"needs", key:"needs", multi:true,
+  title:"Tell us about your students",
+  hint:"Select everything that applies to the group. This carries the most weight after your available platform.",
+  options:[
+    {v:"simpleControls",label:"Needs very simple controls", icon:"gamepad",sub:"One or two buttons"},
+    {v:"fineMotor",label:"Fine motor challenges", icon:"hand",sub:"Precision inputs are hard"},
+    {v:"intellectual",label:"Intellectual disability", icon:"brain",sub:"Simple rules and goals"},
+    {v:"autism",label:"Autistic students", icon:"sun",sub:"Predictable, low sensory load"},
+    {v:"commSupport",label:"Communication support", icon:"chat",sub:"Limited or non-speaking"},
+    {v:"attention",label:"Short attention span", icon:"timer",sub:"Short rounds needed"},
+    {v:"mixedAbilities",label:"Mixed abilities", icon:"rainbow",sub:"Wide range in one room"},
+    {v:"experienced",label:"Experienced gamers", icon:"joystick",sub:"Wants real depth"},
+    {v:"beginners",label:"Complete beginners", icon:"sprout",sub:"First time holding a controller"}
+  ]
+},
+{
+  id:"platforms", key:"platforms", multi:true,
+  title:"What equipment can you use?",
+  hint:"Select every platform available to you. This is weighted heaviest — a perfect game you cannot run is not a recommendation.",
+  options:[
+    {v:"switch",label:"Nintendo Switch", icon:"console",sub:"Handheld or docked"},
+    {v:"pc",label:"Windows PCs", icon:"laptop",sub:"Lab or library computers"},
+    {v:"xbox",label:"Xbox", icon:"xbox",sub:"Series X|S or One"},
+    {v:"playstation",label:"PlayStation", icon:"shapes",sub:"PS5 or PS4"},
+    {v:"multi",label:"Multiple platforms", icon:"shuffle",sub:"Prefer cross-platform titles"},
+    {v:"none",label:"No equipment yet", icon:"cart",sub:"Show me what to buy first"}
+  ]
+},
+{
+  id:"budget", key:"budget", multi:false,
+  title:"What is your budget?",
+  hint:"Software only. Hardware, storage and any subscriptions sit outside this figure.",
+  options:[
+    {v:"existing",label:"Existing or free games only", icon:"tag",sub:"Nothing to spend"},
+    {v:"under100",label:"Under $100", icon:"banknote",sub:"One or two titles"},
+    {v:"under500",label:"Under $500", icon:"card",sub:"A small library"},
+    {v:"flexible",label:"Flexible", icon:"checkCircle",sub:"Cost is not the limit"}
+  ]
+},
+{
+  id:"students", key:"students", multi:false,
+  title:"How many students at once?",
+  hint:"Think about how many are actually playing at any one moment, not the size of the club.",
+  options:[
+    {v:"2",label:"2 students", icon:"users",sub:"Pairs"},
+    {v:"4",label:"4 students", icon:"users2",sub:"One console, four controllers"},
+    {v:"8",label:"8 students", icon:"users3",sub:"Two setups or teams"},
+    {v:"16",label:"16 or more", icon:"building",sub:"A whole class or event"},
+    {v:"rotating",label:"Rotating groups", icon:"rotate",sub:"Students swap in and out"}
+  ]
+},
+{
+  id:"styles", key:"styles", multi:true, optional:true,
+  title:"Any preferred game styles?",
+  hint:"Optional. Skip this if you are open to anything — the recommendations will be broader.",
+  options:[
+    {v:"racing",label:"Racing", icon:"flag"},
+    {v:"sports",label:"Sports", icon:"ball"},
+    {v:"coop",label:"Cooperative", icon:"link"},
+    {v:"sandbox",label:"Sandbox", icon:"cube"},
+    {v:"party",label:"Party games", icon:"party"},
+    {v:"rhythm",label:"Rhythm", icon:"music"},
+    {v:"platformer",label:"Platformer", icon:"stairs"},
+    {v:"puzzle",label:"Puzzle", icon:"puzzle"},
+    {v:"strategy",label:"Strategy", icon:"chess"}
+  ]
+},
+{
+  id:"event", key:"event", multi:false,
+  title:"What kind of event is this?",
+  hint:"The format changes what works — a 40-minute class needs something very different to a regional final.",
+  options:[
+    {v:"casual",label:"Casual play", icon:"smile",sub:"Just for enjoyment"},
+    {v:"lunchtime",label:"Lunchtime club", icon:"apple",sub:"20–40 minutes, drop-in"},
+    {v:"house",label:"House competition", icon:"building",sub:"Whole-school event"},
+    {v:"regional",label:"Regional competition", icon:"bus",sub:"Multiple schools"},
+    {v:"inclusivePE",label:"Inclusive PE activity", icon:"dumbbell",sub:"Movement focused"},
+    {v:"classroom",label:"Classroom activity", icon:"book",sub:"Curriculum linked"}
+  ]
+}
+];
+
+/* Labels reused across results, chips and explanations. */
+const LABELS = {};
+STEPS.forEach(function(s){ s.options.forEach(function(o){ LABELS[s.key+":"+o.v] = o.label; }); });
+const PLATFORM_NAMES = {switch:"Nintendo Switch",pc:"Windows PC",xbox:"Xbox",playstation:"PlayStation"};
+const STYLE_NAMES = {racing:"Racing",sports:"Sports",coop:"Cooperative",sandbox:"Sandbox",party:"Party",rhythm:"Rhythm",platformer:"Platformer",puzzle:"Puzzle",strategy:"Strategy"};
+const COMPLEXITY_WORDS = ["","Very low","Low","Moderate","High","Very high"];
+
+/* Phrases used when a game scores well against a selected student need. */
+const NEED_REASONS = {
+  simpleControls:"Controls are simple enough to learn in a single turn.",
+  fineMotor:"Assists reduce the fine-motor precision needed to compete.",
+  intellectual:"Rules and goals are immediately clear without reading.",
+  autism:"Predictable structure and manageable sensory load.",
+  commSupport:"No speech required to play or to succeed.",
+  attention:"Rounds are short, so attention resets naturally.",
+  mixedAbilities:"A beginner and an experienced player can share a round fairly.",
+  experienced:"Enough depth to stay interesting for experienced gamers.",
+  beginners:"Forgiving enough for a student's first time on a controller."
+};
+
+/* ============================================================================
+   3. STATE
+   ========================================================================== */
+const state = {
+  step:0,
+  answers:{goal:null,needs:[],platforms:[],budget:null,students:null,styles:[],event:null},
+  results:null,
+  view:"wizard",
+  favs:load("iegf-favs",[]),
+  deptOnly:load("iegf-dept-only",true),   /* department-assessed titles only, by default */
+  filters:{q:"",platform:null,style:null}
+};
+
+function load(k,fallback){
+  try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; }
+  catch(e){ return fallback; }
+}
+function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+/* ============================================================================
+   4. RECOMMENDATION ENGINE
+   ----------------------------------------------------------------------------
+   Every game is scored against every criterion. Nothing is filtered out;
+   a poor platform fit simply scores zero on the heaviest weighted criterion.
+   ========================================================================== */
+const WEIGHTS = {platform:4,goal:3,needs:3,budget:2,players:2,styles:2,event:2,practicality:1};
+
+function scoreGame(g,a){
+  const detail = {};
+
+  /* Platform (weight 4) */
+  let platform;
+  if(!a.platforms.length){
+    platform = 3;                                   // no answer: neutral
+  }else if(a.platforms.indexOf("none") > -1){
+    // Buying from scratch: favour the platform that is cheapest and easiest to set up.
+    platform = g.platforms.indexOf("switch") > -1 ? 5 : 3;
+  }else if(a.platforms.indexOf("multi") > -1 && a.platforms.length === 1){
+    platform = g.platforms.length >= 3 ? 5 : 1;
+  }else{
+    const owned = a.platforms.filter(function(p){ return p !== "multi" && p !== "none"; });
+    const hit = owned.some(function(p){ return g.platforms.indexOf(p) > -1; });
+    platform = hit ? 5 : 0;
+    if(a.platforms.indexOf("multi") > -1 && g.platforms.length >= 3 && hit) platform = 5;
+  }
+  detail.platform = platform;
+
+  /* Primary goal (weight 3) */
+  detail.goal = a.goal ? (g.goals[a.goal] || 0) : 3;
+
+  /* Student needs (weight 3) — average across everything selected */
+  if(a.needs.length){
+    let sum = 0;
+    a.needs.forEach(function(n){ sum += (g.needs[n] || 0); });
+    detail.needs = sum / a.needs.length;
+  }else{
+    detail.needs = 3;
+  }
+
+  /* Budget (weight 2) */
+  let budget = 3;
+  if(a.budget === "existing")   budget = g.cost === 0 ? 5 : (g.cost <= 20 ? 3 : 1);
+  else if(a.budget === "under100") budget = g.cost <= 80 ? 5 : (g.cost <= 100 ? 4 : 1);
+  else if(a.budget === "under500") budget = g.cost <= 120 ? 5 : 3;
+  else if(a.budget === "flexible") budget = 5;
+  detail.budget = budget;
+
+  /* Group size (weight 2) */
+  detail.players = a.students ? (g.playerFit[a.students] || 0) : 3;
+
+  /* Preferred style (weight 2) — optional */
+  if(a.styles.length){
+    const matched = a.styles.filter(function(s){ return g.styles.indexOf(s) > -1; });
+    detail.styles = matched.length ? 5 : 1;
+    detail.matchedStyles = matched;
+  }else{
+    detail.styles = 3;
+    detail.matchedStyles = [];
+  }
+
+  /* Event type (weight 2) */
+  detail.event = a.event ? (g.events[a.event] || 0) : 3;
+
+  /* Practicality (weight 1) — a game that stops working when the school
+     network does is a real risk on the day, so offline play scores higher. */
+  detail.practicality = g.offline ? 5 : (g.internet ? 2 : 4);
+
+  let total = 0, max = 0;
+  Object.keys(WEIGHTS).forEach(function(k){
+    total += detail[k] * WEIGHTS[k];
+    max += 5 * WEIGHTS[k];
+  });
+
+  return { game:g, score:Math.round((total / max) * 100), detail:detail };
+}
+
+/* Department status is policy, not preference: it filters rather than scores.
+   Games the department has not permitted never appear in recommendations. */
+function eligibleGames(){
+  return GAMES.filter(function(g){
+    if(g.dept === "notPermitted") return false;
+    return state.deptOnly ? g.dept === "permitted" : true;
+  });
+}
+
+function rank(a){
+  return eligibleGames().map(function(g){ return scoreGame(g,a); })
+              .sort(function(x,y){
+                return y.score - x.score ||
+                       y.game.access - x.game.access ||
+                       x.game.title.localeCompare(y.game.title);
+              });
+}
+
+/* Builds the plain-English "Why this game?" list for a scored result. */
+function reasonsFor(res,a){
+  const g = res.game, d = res.detail, out = [];
+
+  if(a.goal && d.goal >= 4){
+    out.push((d.goal === 5 ? "Outstanding" : "Strong") + " match for your goal of " +
+             LABELS["goal:"+a.goal].toLowerCase() + ".");
+  }
+  a.needs.forEach(function(n){
+    if((g.needs[n] || 0) >= 4 && NEED_REASONS[n]) out.push(NEED_REASONS[n]);
+  });
+  if(d.platform === 5 && a.platforms.length){
+    if(a.platforms.indexOf("none") > -1){
+      out.push("A sensible first purchase — runs on Nintendo Switch, the simplest setup to start with.");
+    }else if(a.platforms.indexOf("multi") > -1 && g.platforms.length >= 3){
+      out.push("Cross-platform: available on " + g.platforms.map(function(p){ return PLATFORM_NAMES[p]; }).join(", ") + ".");
+    }else{
+      out.push("Runs on equipment you already have (" +
+        g.platforms.filter(function(p){ return a.platforms.indexOf(p) > -1; })
+                   .map(function(p){ return PLATFORM_NAMES[p]; }).join(", ") + ").");
+    }
+  }
+  if(a.budget && d.budget >= 4){
+    out.push(g.cost === 0 ? "Free to play, so cost is never a barrier." : "Fits your budget at " + g.costLabel + ".");
+  }
+  if(a.students && d.players >= 4){
+    out.push("Works comfortably with " + LABELS["students:"+a.students].toLowerCase() + " playing.");
+  }
+  if(d.matchedStyles && d.matchedStyles.length){
+    out.push("Matches the " + d.matchedStyles.map(function(s){ return STYLE_NAMES[s].toLowerCase(); }).join(" and ") + " style you asked for.");
+  }
+  if(a.event && d.event >= 4){
+    out.push("Well suited to a " + LABELS["event:"+a.event].toLowerCase() + ".");
+  }
+
+  /* Honest caveats — a recommendation that hides problems is not useful. */
+  if(d.platform === 0) out.push({warn:true,text:"Not available on the platform you selected."});
+  if(a.needs.length){
+    const weak = a.needs.filter(function(n){ return (g.needs[n] || 0) <= 2; });
+    if(weak.length) out.push({warn:true,text:"Weaker fit for: " +
+      weak.map(function(n){ return LABELS["needs:"+n].toLowerCase(); }).join(", ") + "."});
+  }
+  if(g.internet && !g.offline) out.push({warn:true,text:"Needs a working internet connection — test the school network first."});
+
+  return out.length ? out : ["A solid general-purpose choice, though nothing scored strongly against your specific answers."];
+}
+
+/* ============================================================================
+   5a. ICON SET
+   ----------------------------------------------------------------------------
+   Line icons drawn on a 24x24 grid, inherited stroke colour, no icon font and
+   no network request. Add one by dropping a new path into ICONS.
+   ========================================================================== */
+const ICONS = {
+  compass:'<circle cx="12" cy="12" r="9"/><path d="m15.6 8.4-2.1 5.1-5.1 2.1 2.1-5.1z"/>',
+  library:'<rect x="3" y="5" width="4.2" height="14" rx="1.2"/><rect x="9" y="5" width="4.2" height="14" rx="1.2"/><path d="m15.8 6.6 3.4-1 2.8 12.2-3.4 1z"/>',
+  scales:'<path d="M12 4v16M7 20.5h10M4.5 8h15l-1.5-2-6 1-6-1z"/><path d="m5 8-2.5 5.5a3 3 0 0 0 5 0z"/><path d="m19 8 2.5 5.5a3 3 0 0 1-5 0z"/>',
+  star:'<path d="m12 3.8 2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
+  starFill:'<path d="m12 3.8 2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z" fill="currentColor"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/>',
+  moon:'<path d="M20 14.6A8.3 8.3 0 0 1 9.4 4 8.5 8.5 0 1 0 20 14.6z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2.5 12h2M19.5 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  arrowRight:'<path d="M4 12h15M13 6l6 6-6 6"/>',
+  arrowLeft:'<path d="M20 12H5M11 6l-6 6 6 6"/>',
+  grid:'<rect x="3" y="3" width="7.6" height="7.6" rx="1.6"/><rect x="13.4" y="3" width="7.6" height="7.6" rx="1.6"/><rect x="3" y="13.4" width="7.6" height="7.6" rx="1.6"/><rect x="13.4" y="13.4" width="7.6" height="7.6" rx="1.6"/>',
+  dice:'<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="8.6" cy="8.6" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15.4" cy="15.4" r="1.3" fill="currentColor" stroke="none"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  printer:'<path d="M7 8.5V3.5h10v5"/><rect x="3.5" y="8.5" width="17" height="8" rx="2.2"/><path d="M7 13.5h10v7H7z"/>',
+  rotate:'<path d="M20.5 12a8.5 8.5 0 1 1-2.8-6.3"/><path d="M20.5 3.2V8H16"/>',
+  check:'<path d="m5 12.6 4.6 4.6L19.2 7"/>',
+  shield:'<path d="M12 3 5 6.1v5.6c0 4.3 2.9 7.8 7 9.6 4.1-1.8 7-5.3 7-9.6V6.1z"/><path d="m9 12.1 2.2 2.2 4.3-4.5"/>',
+  clipboard:'<rect x="5" y="4.6" width="14" height="16" rx="2.6"/><path d="M9 4.6V3.2h6v1.4"/><path d="M8.8 10.2h6.4M8.8 14h4.2"/>',
+  ban:'<circle cx="12" cy="12" r="9"/><path d="m5.8 5.8 12.4 12.4"/>',
+  alert:'<path d="M12 3.8 21 20H3z"/><path d="M12 9.5v4.2M12 16.8h.01"/>',
+  users:'<circle cx="12" cy="7.5" r="3.4"/><path d="M5 20c0-3.4 3.1-5.3 7-5.3s7 1.9 7 5.3"/>',
+  users2:'<circle cx="8.2" cy="8" r="3.2"/><circle cx="16.2" cy="8" r="3.2"/><path d="M2.6 19.6c0-3 2.5-4.7 5.6-4.7s5.6 1.7 5.6 4.7M13.8 15.3a7 7 0 0 1 2.4-.4c3.1 0 5.6 1.7 5.6 4.7"/>',
+  users3:'<circle cx="12" cy="8" r="3"/><path d="M6 20c0-3 2.7-4.6 6-4.6s6 1.6 6 4.6"/><circle cx="4.4" cy="9.6" r="2.1"/><circle cx="19.6" cy="9.6" r="2.1"/><path d="M1.6 18.4c0-2 1.2-3.1 2.8-3.1M22.4 18.4c0-2-1.2-3.1-2.8-3.1"/>',
+  trophy:'<path d="M7.5 4h9v4.6a4.5 4.5 0 0 1-9 0z"/><path d="M7.5 5.6H5a2.9 2.9 0 0 0 2.9 3M16.5 5.6H19a2.9 2.9 0 0 1-2.9 3"/><path d="M12 13.2v3.6M9.6 20.4l.5-3.6h3.8l.5 3.6z"/>',
+  puzzle:'<path d="M9.4 4.6h1.9a1.9 1.9 0 0 1 3.6 0h1.9a1 1 0 0 1 1 1v2a1.9 1.9 0 0 1 0 3.6v2.2a1 1 0 0 1-1 1h-2.2a1.9 1.9 0 0 0-3.6 0H8.4a1 1 0 0 1-1-1v-2.2a1.9 1.9 0 0 1 0-3.6v-2a1 1 0 0 1 1-1z"/>',
+  chat:'<path d="M4.6 5.4h14.8A1.6 1.6 0 0 1 21 7v7.6a1.6 1.6 0 0 1-1.6 1.6H10L5.6 19.8v-3.6h-1A1.6 1.6 0 0 1 3 14.6V7a1.6 1.6 0 0 1 1.6-1.6z"/><path d="M7.6 9.6h8.8M7.6 12.6h5.4"/>',
+  activity:'<path d="M2.6 12.6h4l2.6-6.4 4 12.6 2.6-6.2h5.6"/>',
+  chess:'<path d="M10 4.4h4l-1.1 3h2.2l-1.7 4.2h-2.8L8.9 7.4H11z"/><path d="M9.2 11.8h5.6l1 4.8H8.2z"/><path d="M6.6 20.4h10.8l-1-3.8H7.6z"/>',
+  palette:'<path d="M12 3.6a8.4 8.4 0 1 0 0 16.8c1.4 0 2.1-.9 2.1-1.9 0-1.5-1.4-1.9-1.4-3 0-.9.7-1.5 1.7-1.5h1.7a4.4 4.4 0 0 0 4.4-4.4c0-3.4-3.7-6-8.5-6z"/><circle cx="8" cy="10.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="9.6" r="1.1" fill="currentColor" stroke="none"/>',
+  sparkle:'<path d="m12 3.4 2.2 6.4 6.4 2.2-6.4 2.2-2.2 6.4-2.2-6.4L3.4 12l6.4-2.2z"/>',
+  apple:'<path d="M12 8.6c-1-1.3-2.4-1.9-3.9-1.6C5.8 7.4 4.4 9.6 4.4 12.4c0 3.7 2.4 7.8 4.7 7.8.9 0 1.7-.5 2.9-.5s2 .5 2.9.5c2.3 0 4.7-4.1 4.7-7.8 0-2.8-1.4-5-3.7-5.4-1.5-.3-2.9.3-3.9 1.6z"/><path d="M12 8.6V6.2A2.6 2.6 0 0 1 14.6 3.6"/>',
+  medal:'<circle cx="12" cy="14.6" r="5.6"/><path d="m12 12.3.9 1.9 2.1.3-1.5 1.5.4 2.1-1.9-1-1.9 1 .4-2.1-1.5-1.5 2.1-.3z"/><path d="M8.6 8 6.4 3.5h11.2L15.4 8"/>',
+  gamepad:'<rect x="2.5" y="7" width="19" height="10.4" rx="4.6"/><path d="M7.2 10.4v3.2M5.6 12h3.2"/><circle cx="15.8" cy="11.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="18.2" cy="13.4" r="1.1" fill="currentColor" stroke="none"/>',
+  hand:'<path d="M8 13.4V6.6a1.6 1.6 0 0 1 3.2 0v4.2V5a1.6 1.6 0 0 1 3.2 0v5.8V7.6a1.6 1.6 0 0 1 3.1 0v7.2a5.6 5.6 0 0 1-5.6 5.6h-.5a5.4 5.4 0 0 1-4.8-3l-1.4-2.6a1.5 1.5 0 0 1 2.5-1.6z"/>',
+  brain:'<path d="M12 5.4a3 3 0 0 0-5.6-.6A2.9 2.9 0 0 0 4 8.9a3 3 0 0 0 .7 4.6A3 3 0 0 0 7.2 18a2.9 2.9 0 0 0 4.8.6z"/><path d="M12 5.4a3 3 0 0 1 5.6-.6A2.9 2.9 0 0 1 20 8.9a3 3 0 0 1-.7 4.6A3 3 0 0 1 16.8 18a2.9 2.9 0 0 1-4.8.6z"/><path d="M12 5.4v13.2"/>',
+  timer:'<circle cx="12" cy="13.6" r="7.4"/><path d="M12 9.6v4.2l2.6 2M9.6 2.6h4.8"/>',
+  rainbow:'<path d="M3 18.6a9 9 0 0 1 18 0"/><path d="M6.6 18.6a5.4 5.4 0 0 1 10.8 0"/><path d="M10.2 18.6a1.8 1.8 0 0 1 3.6 0"/>',
+  joystick:'<circle cx="12" cy="6.4" r="2.9"/><path d="M12 9.3v5.4"/><path d="M5.8 20.6c0-3.1 2.8-4.6 6.2-4.6s6.2 1.5 6.2 4.6z"/>',
+  sprout:'<path d="M12 20.4v-6.8M8 20.4h8"/><path d="M12 13.6C12 10.2 9.6 8 6 8c0 3.4 2.4 5.6 6 5.6z"/><path d="M12 13.6c0-3 2.3-5.4 5.6-5.4 0 3-2.3 5.4-5.6 5.4z"/>',
+  console:'<rect x="3" y="4.6" width="18" height="14.8" rx="3.2"/><path d="M8.6 4.6v14.8M15.4 4.6v14.8"/><circle cx="5.8" cy="10" r=".9" fill="currentColor" stroke="none"/><circle cx="18.2" cy="14" r=".9" fill="currentColor" stroke="none"/>',
+  laptop:'<rect x="4" y="5" width="16" height="10.6" rx="2"/><path d="M2 18.6h20"/>',
+  xbox:'<circle cx="12" cy="12" r="9"/><path d="M7.4 6.4C10 9 11 10.6 12 12.6c1-2 2-3.6 4.6-6.2M7.4 17.6c2.6-2.6 3.6-4.2 4.6-6.2 1 2 2 3.6 4.6 6.2"/>',
+  shapes:'<circle cx="6.8" cy="7.6" r="2.6"/><path d="m17 5 2.7 4.8h-5.4z"/><rect x="4.2" y="14" width="5.2" height="5.2" rx="1.2"/><path d="m17 13.8 2.7 2.7-2.7 2.7-2.7-2.7z"/>',
+  shuffle:'<path d="M3 7.4h3.4c2.1 0 3.2 1.3 4.4 3.2s2.3 3.2 4.4 3.2H21M3 16.8h3.4c2.1 0 3.2-1.3 4.4-3.2M15.2 10.2c1.2-1.9 2.3-2.8 4.4-2.8H21"/><path d="m18 4.4 3 3-3 3M18 10.8l3 3-3 3"/>',
+  cart:'<circle cx="9.6" cy="19" r="1.6"/><circle cx="17.2" cy="19" r="1.6"/><path d="M2.6 4h2.2l2.6 10.6h11.2l2.2-7.6H6.2"/>',
+  tag:'<path d="M11.2 3.6H20a.6.6 0 0 1 .6.6v8.6l-8.8 8.8a1 1 0 0 1-1.4 0l-8-8a1 1 0 0 1 0-1.4z"/><circle cx="16.6" cy="7.4" r="1.4"/>',
+  banknote:'<rect x="2.6" y="6" width="18.8" height="12" rx="2.2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.2 10v4M17.8 10v4"/>',
+  card:'<rect x="2.6" y="5.6" width="18.8" height="12.8" rx="2.6"/><path d="M2.6 10.2h18.8M6.2 14.8h4.2"/>',
+  checkCircle:'<circle cx="12" cy="12" r="9"/><path d="m8 12.4 2.7 2.7 5.3-5.6"/>',
+  building:'<path d="M4 20.6V8l8-4.6L20 8v12.6"/><path d="M2.6 20.6h18.8M9.6 20.6V14h4.8v6.6"/><path d="M8 10.6h1.6M14.4 10.6H16"/>',
+  bus:'<rect x="3.6" y="4.4" width="16.8" height="12" rx="2.6"/><path d="M3.6 10.6h16.8M8.2 4.4v6.2M15.8 4.4v6.2"/><circle cx="7.6" cy="19" r="1.6"/><circle cx="16.4" cy="19" r="1.6"/>',
+  dumbbell:'<path d="M4 9.4v5.2M7.2 7.4v9.2M16.8 7.4v9.2M20 9.4v5.2M7.2 12h9.6"/>',
+  book:'<path d="M4 4.6h5.4A2.8 2.8 0 0 1 12 6.2a2.8 2.8 0 0 1 2.6-1.6H20v13.2h-5.4A2.8 2.8 0 0 0 12 19.4a2.8 2.8 0 0 0-2.6-1.8H4z"/><path d="M12 6.2v13.2"/>',
+  smile:'<circle cx="12" cy="12" r="9"/><path d="M8.4 14c.9 1.3 2.1 1.9 3.6 1.9s2.7-.6 3.6-1.9"/><path d="M9.2 9.6h.01M14.8 9.6h.01"/>',
+  flag:'<path d="M5.4 20.6V4M5.4 4.6h11l-1.9 3.4 1.9 3.4h-11"/>',
+  ball:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M6.2 5.4c1.9 1.9 2.9 4 2.9 6.6s-1 4.7-2.9 6.6M17.8 5.4c-1.9 1.9-2.9 4-2.9 6.6s1 4.7 2.9 6.6"/>',
+  link:'<path d="m9.4 14.6 5.2-5.2"/><path d="m10.6 7.4 1.6-1.6a3.9 3.9 0 0 1 5.5 5.5L16 13M8 11l-1.7 1.7a3.9 3.9 0 0 0 5.5 5.5l1.6-1.6"/>',
+  cube:'<path d="m12 3 8.6 4.6v8.8L12 21l-8.6-4.6V7.6z"/><path d="m3.4 7.6 8.6 4.6 8.6-4.6M12 12.2V21"/>',
+  party:'<path d="m3.6 20.4 5-13.2 8.2 8.2z"/><path d="M14 4.4 15.2 6M18.6 8.2l2-.8M17.4 3.2l.6 2.2M20.8 12.2l-2.2-.6"/>',
+  music:'<path d="M9.2 17.6V6.4l10-2v11"/><circle cx="6.6" cy="17.8" r="2.6"/><circle cx="16.6" cy="15.6" r="2.6"/>',
+  stairs:'<path d="M3.4 20.4h4.2v-4.4h4.2v-4.4H16V7.2h4.6"/>',
+  dot:'<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>'
+};
+
+function icon(name,size){
+  const p = ICONS[name] || ICONS.dot;
+  return '<svg class="i" width="' + (size||20) + '" height="' + (size||20) + '" viewBox="0 0 24 24" ' +
+    'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" ' +
+    'aria-hidden="true" focusable="false">' + p + "</svg>";
+}
+
+/* ============================================================================
+   5b. GAME ARTWORK
+   ----------------------------------------------------------------------------
+   Every card has two layers of art.
+
+   1. The illustration below: an original vector scene per genre, tinted with the
+      game's own two colours. Drawn here, nothing to license.
+   2. The publisher key art in  images/<id>.jpg , pointed at by  image:  on each
+      game. Local files, so the app still runs with no internet connection.
+
+   Layer 2 covers layer 1 when it loads. Delete the images folder and every card
+   falls back to its illustration — see gameArt() at the end of this section.
+   ========================================================================== */
+const INK  = "rgba(9,16,28,.34)";     /* ground / road */
+const INK2 = "rgba(9,16,28,.2)";      /* soft shading */
+const DK   = "rgba(9,16,28,.58)";     /* wheels, hard accents */
+const LT   = "#ffffff";               /* main foreground shapes */
+const LT2  = "rgba(255,255,255,.74)";
+const LT3  = "rgba(255,255,255,.34)";
+
+/* Small deterministic jitter so games sharing a scene are not identical. */
+function seed(g){
+  let h = 0;
+  for(let i=0;i<g.id.length;i++) h = (h*31 + g.id.charCodeAt(i)) % 997;
+  return h;
+}
+function iso(x,y,s,fillTop,fillL,fillR){
+  return '<path d="M' + x + " " + y + "l" + s + " " + (-s*0.5) + "l" + s + " " + (s*0.5) + "l" + (-s) + " " + (s*0.5) + 'z" fill="' + fillTop + '"/>' +
+         '<path d="M' + x + " " + y + "l" + s + " " + (s*0.5) + "v" + s + "l" + (-s) + " " + (-s*0.5) + 'z" fill="' + fillL + '"/>' +
+         '<path d="M' + (x+s*2) + " " + y + "l" + (-s) + " " + (s*0.5) + "v" + s + "l" + s + " " + (-s*0.5) + 'z" fill="' + fillR + '"/>';
+}
+
+const MOTIFS = {
+  /* Kart racing: banked road, dashed centre line, two karts */
+  track:function(g){
+    const k = seed(g) % 20;
+    return '<circle cx="264" cy="30" r="34" fill="' + LT3 + '"/>' +
+      '<path d="M-10 120Q80 58 150 60T330 26v94z" fill="' + INK + '"/>' +
+      '<path d="M-10 118Q80 64 150 66T330 34" stroke="' + LT2 + '" stroke-width="3" stroke-dasharray="16 13" fill="none"/>' +
+      '<g transform="translate(' + (86+k) + ',82)"><rect x="-25" y="-13" width="50" height="17" rx="8" fill="' + LT + '"/>' +
+        '<rect x="-9" y="-25" width="21" height="14" rx="6" fill="' + LT2 + '"/>' +
+        '<circle cx="-16" cy="6" r="8" fill="' + DK + '"/><circle cx="16" cy="6" r="8" fill="' + DK + '"/></g>' +
+      '<g transform="translate(' + (216-k) + ',52) scale(.72)"><rect x="-25" y="-13" width="50" height="17" rx="8" fill="' + LT2 + '"/>' +
+        '<rect x="-9" y="-25" width="21" height="14" rx="6" fill="' + LT3 + '"/>' +
+        '<circle cx="-16" cy="6" r="8" fill="' + DK + '"/><circle cx="16" cy="6" r="8" fill="' + DK + '"/></g>' +
+      '<path d="M20 30h34M12 42h22M30 18h26" stroke="' + LT3 + '" stroke-width="4" stroke-linecap="round"/>';
+  },
+  /* Time-trial circuit seen from above, with checker start line */
+  circuit:function(g){
+    const k = seed(g) % 14;
+    return '<path d="M56 96C18 96 18 26 74 26h150c50 0 50 70 4 70H84" fill="none" stroke="' + INK + '" stroke-width="26" stroke-linecap="round"/>' +
+      '<path d="M56 96C18 96 18 26 74 26h150c50 0 50 70 4 70H84" fill="none" stroke="' + LT3 + '" stroke-width="2" stroke-dasharray="10 12"/>' +
+      '<g transform="translate(' + (108+k) + ',26)"><rect x="-4" y="-14" width="8" height="28" fill="' + LT + '"/>' +
+        '<rect x="-4" y="-14" width="4" height="7" fill="' + INK + '"/><rect x="0" y="-7" width="4" height="7" fill="' + INK + '"/>' +
+        '<rect x="-4" y="0" width="4" height="7" fill="' + INK + '"/><rect x="0" y="7" width="4" height="7" fill="' + INK + '"/></g>' +
+      '<g transform="translate(' + (188-k) + ',26)"><rect x="-13" y="-8" width="26" height="16" rx="7" fill="' + LT + '"/>' +
+        '<rect x="-6" y="-5" width="12" height="10" rx="4" fill="' + INK2 + '"/></g>' +
+      '<circle cx="272" cy="92" r="19" fill="none" stroke="' + LT2 + '" stroke-width="4"/>' +
+      '<path d="M272 82v10l6 4" stroke="' + LT2 + '" stroke-width="4" stroke-linecap="round" fill="none"/>';
+  },
+  /* Motion sport: figure mid-swing with a ball arc */
+  motion:function(g){
+    const k = seed(g) % 12;
+    return '<path d="M0 104h320" stroke="' + INK2 + '" stroke-width="16"/>' +
+      '<g transform="translate(' + (104+k) + ',20)" stroke="' + LT + '" stroke-width="9" stroke-linecap="round" fill="none">' +
+        '<circle cx="0" cy="12" r="11" fill="' + LT + '" stroke="none"/>' +
+        '<path d="M0 24v30M0 54l-13 24M0 54l14 24M0 32l24-12M0 34l-20 10"/></g>' +
+      '<circle cx="' + (150+k) + '" cy="34" r="9" fill="' + LT + '"/>' +
+      '<path d="M' + (156+k) + ' 30q40-26 84 6" fill="none" stroke="' + LT2 + '" stroke-width="4" stroke-dasharray="9 10"/>' +
+      '<circle cx="248" cy="46" r="15" fill="' + LT2 + '"/>' +
+      '<path d="M64 44a26 26 0 0 1 0 36" fill="none" stroke="' + LT3 + '" stroke-width="5" stroke-linecap="round"/>';
+  },
+  /* Sandbox: isometric block cluster */
+  blocks:function(g){
+    return '<rect width="320" height="120" fill="none"/>' +
+      iso(96,52,26,LT,INK,INK2) + iso(148,52,26,LT2,INK,INK2) + iso(122,78,26,LT,INK,INK2) +
+      iso(70,78,26,LT2,INK2,INK) + iso(174,78,26,LT2,INK2,INK) +
+      '<path d="M232 40l16-16 10 10-16 16zM248 50l-24 24-8-8 24-24z" fill="' + LT + '"/>' +
+      '<circle cx="52" cy="30" r="10" fill="' + LT3 + '"/><circle cx="272" cy="94" r="7" fill="' + LT3 + '"/>';
+  },
+  /* Ball sport: goal frame, ball and boost trail */
+  ball:function(g){
+    const k = seed(g) % 16;
+    return '<path d="M0 100h320" stroke="' + INK2 + '" stroke-width="20"/>' +
+      '<path d="M212 92V38h74v54" fill="none" stroke="' + LT2 + '" stroke-width="5"/>' +
+      '<path d="M224 92V48h50v44M212 60h74M212 76h74M236 38v54M262 38v54" stroke="' + LT3 + '" stroke-width="3" fill="none"/>' +
+      '<circle cx="' + (150+k) + '" cy="56" r="24" fill="' + LT + '"/>' +
+      '<path d="M' + (150+k) + ' 32v48M' + (126+k) + ' 56h48" stroke="' + INK2 + '" stroke-width="4"/>' +
+      '<path d="M' + (118+k) + ' 56q-30-16-62-4M' + (120+k) + ' 70q-26-6-52 4" fill="none" stroke="' + LT3 + '" stroke-width="6" stroke-linecap="round"/>';
+  },
+  /* Obstacle course: rolling bar and tumbling figures */
+  obstacle:function(g){
+    const k = seed(g) % 14;
+    return '<path d="M0 104h320" stroke="' + INK2 + '" stroke-width="18"/>' +
+      '<rect x="150" y="30" width="26" height="70" rx="13" fill="' + INK + '"/>' +
+      '<rect x="150" y="30" width="26" height="24" rx="12" fill="' + LT3 + '"/>' +
+      '<g transform="translate(' + (68+k) + ',60)"><ellipse cx="0" cy="0" rx="22" ry="26" fill="' + LT + '"/>' +
+        '<rect x="-9" y="-8" width="18" height="9" rx="4.5" fill="' + INK2 + '"/>' +
+        '<path d="M-12 26v10M12 26v10" stroke="' + LT + '" stroke-width="8" stroke-linecap="round"/></g>' +
+      '<g transform="translate(' + (238-k) + ',56) rotate(18)"><ellipse cx="0" cy="0" rx="18" ry="22" fill="' + LT2 + '"/>' +
+        '<rect x="-8" y="-7" width="16" height="8" rx="4" fill="' + INK2 + '"/></g>' +
+      '<circle cx="286" cy="26" r="8" fill="' + LT3 + '"/><circle cx="34" cy="24" r="6" fill="' + LT3 + '"/>';
+  },
+  /* Cooperative kitchen: pot, flame, plate, steam */
+  kitchen:function(g){
+    return '<path d="M0 104h320" stroke="' + INK2 + '" stroke-width="18"/>' +
+      '<path d="M96 56h72v28a14 14 0 0 1-14 14h-44a14 14 0 0 1-14-14z" fill="' + LT + '"/>' +
+      '<rect x="88" y="48" width="88" height="10" rx="5" fill="' + LT + '"/>' +
+      '<rect x="172" y="52" width="26" height="8" rx="4" fill="' + LT2 + '"/>' +
+      '<path d="M118 40q8-10 0-20 14 6 10 20M148 38q8-12 0-22 14 8 10 22" fill="none" stroke="' + LT2 + '" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M216 96q-14 0-14-12t14-12 14 12-14 12z" fill="' + LT2 + '"/>' +
+      '<circle cx="246" cy="76" r="18" fill="none" stroke="' + LT + '" stroke-width="5"/>' +
+      '<circle cx="246" cy="76" r="7" fill="' + LT + '"/>' +
+      '<path d="M42 96q-12-14 0-28 4 8 10 6-4 14 8 22z" fill="' + LT2 + '"/>';
+  },
+  /* Rhythm: dancing figure, waveform, notes */
+  rhythm:function(g){
+    const k = seed(g) % 10;
+    return '<g transform="translate(' + (92+k) + ',18)" stroke="' + LT + '" stroke-width="9" stroke-linecap="round" fill="none">' +
+        '<circle cx="0" cy="12" r="11" fill="' + LT + '" stroke="none"/>' +
+        '<path d="M0 24v26M0 50l-16 30M0 50l18 28M0 30l-24-8M0 30l26-14"/></g>' +
+      '<path d="M186 84V44l30-6v36" fill="none" stroke="' + LT + '" stroke-width="6"/>' +
+      '<circle cx="180" cy="86" r="8" fill="' + LT + '"/><circle cx="210" cy="80" r="8" fill="' + LT + '"/>' +
+      '<path d="M244 46v28M258 34v52M272 52v18M286 40v40" stroke="' + LT2 + '" stroke-width="7" stroke-linecap="round"/>' +
+      '<path d="M20 60v10M34 50v30M48 64v6" stroke="' + LT3 + '" stroke-width="7" stroke-linecap="round"/>';
+  },
+  /* Cooperative platformer: stepped platforms, figure, flag */
+  platform:function(g){
+    const k = seed(g) % 12;
+    return '<rect x="24" y="92" width="90" height="16" rx="8" fill="' + INK + '"/>' +
+      '<rect x="126" y="70" width="80" height="16" rx="8" fill="' + INK + '"/>' +
+      '<rect x="216" y="48" width="80" height="16" rx="8" fill="' + INK + '"/>' +
+      '<g transform="translate(' + (64+k) + ',60)"><circle cx="0" cy="0" r="12" fill="' + LT + '"/>' +
+        '<path d="M0 12v14M0 26l-10 14M0 26l11 14M0 16l-14-6M0 16l15-8" stroke="' + LT + '" stroke-width="8" stroke-linecap="round" fill="none"/></g>' +
+      '<g transform="translate(' + (166-k) + ',44)"><circle cx="0" cy="0" r="10" fill="' + LT2 + '"/>' +
+        '<path d="M0 10v12M0 22l-9 12M0 22l9 12" stroke="' + LT2 + '" stroke-width="7" stroke-linecap="round" fill="none"/></g>' +
+      '<path d="M256 48V16M256 18h26l-6 9 6 9h-26" fill="' + LT + '" stroke="' + LT + '" stroke-width="5" stroke-linejoin="round"/>' +
+      '<circle cx="120" cy="32" r="9" fill="' + LT3 + '"/><circle cx="206" cy="98" r="7" fill="' + LT3 + '"/>';
+  },
+  /* Brick building blocks */
+  brick:function(g){
+    const k = seed(g) % 18;
+    const b = function(x,y,w,fill){
+      let s = '<rect x="' + (x+5) + '" y="' + (y+5) + '" width="' + w + '" height="26" rx="5" fill="' + INK2 + '"/>' +
+              '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="26" rx="5" fill="' + fill + '"/>';
+      for(let i=0;i<Math.round(w/26);i++){
+        s += '<rect x="' + (x+9+i*26) + '" y="' + (y-7) + '" width="15" height="9" rx="4" fill="' + fill + '"/>';
+      }
+      return s;
+    };
+    return b(58+k,76,104,LT) + b(96+k,42,78,LT2) + b(196,76,78,LT2) + b(212,42,52,LT3) +
+      '<circle cx="40" cy="34" r="8" fill="' + LT3 + '"/>';
+  },
+  /* Party: confetti burst and rings */
+  party:function(g){
+    const k = seed(g) % 24;
+    let bits = "";
+    for(let i=0;i<11;i++){
+      const x = 30 + ((i*47 + k) % 262), y = 18 + ((i*67 + k*3) % 84), r = (i%3)*7;
+      bits += '<rect x="' + x + '" y="' + y + '" width="13" height="9" rx="3" transform="rotate(' + (r*7) + ' ' + x + ' ' + y + ')" fill="' + (i%2 ? LT2 : LT) + '"/>';
+    }
+    return '<circle cx="160" cy="60" r="42" fill="none" stroke="' + LT3 + '" stroke-width="7"/>' +
+      '<circle cx="160" cy="60" r="24" fill="none" stroke="' + LT3 + '" stroke-width="7"/>' +
+      '<path d="M132 84q28-46 56 0" fill="none" stroke="' + LT + '" stroke-width="9" stroke-linecap="round"/>' + bits;
+  },
+  /* Moving boxes and a van */
+  boxes:function(g){
+    return '<path d="M0 104h320" stroke="' + INK2 + '" stroke-width="18"/>' +
+      '<rect x="40" y="52" width="52" height="44" rx="5" fill="' + LT + '"/><path d="M40 70h52M66 52v44" stroke="' + INK2 + '" stroke-width="4"/>' +
+      '<rect x="98" y="66" width="38" height="30" rx="5" fill="' + LT2 + '"/><path d="M98 78h38" stroke="' + INK2 + '" stroke-width="4"/>' +
+      '<rect x="66" y="20" width="40" height="30" rx="5" fill="' + LT2 + '"/><path d="M66 32h40" stroke="' + INK2 + '" stroke-width="4"/>' +
+      '<path d="M170 40h74v56h-92V64h18z" fill="' + LT + '"/>' +
+      '<path d="M170 46v18h-14z" fill="' + INK2 + '"/>' +
+      '<circle cx="178" cy="98" r="10" fill="' + DK + '"/><circle cx="230" cy="98" r="10" fill="' + DK + '"/>' +
+      '<path d="M258 60h34M266 74h26" stroke="' + LT3 + '" stroke-width="5" stroke-linecap="round"/>';
+  },
+  /* Calm outdoor scene: bird and grass */
+  nature:function(g){
+    const k = seed(g) % 10;
+    return '<circle cx="266" cy="32" r="24" fill="' + LT3 + '"/>' +
+      '<path d="M0 100h320" stroke="' + INK2 + '" stroke-width="22"/>' +
+      '<g transform="translate(' + (104+k) + ',40)">' +
+        '<path d="M-30 26l-26-10 20 18z" fill="' + LT2 + '"/>' +
+        '<ellipse cx="0" cy="28" rx="34" ry="19" fill="' + LT + '"/>' +
+        '<path d="M16 20C11-4 28-18 42-13" fill="none" stroke="' + LT + '" stroke-width="12" stroke-linecap="round"/>' +
+        '<circle cx="45" cy="-14" r="9.5" fill="' + LT + '"/>' +
+        '<path d="M53 -16l15 5-15 5z" fill="' + LT2 + '"/>' +
+        '<circle cx="47" cy="-17" r="2.4" fill="' + DK + '"/>' +
+        '<path d="M-8 45v9M10 45v9" stroke="' + LT2 + '" stroke-width="5" stroke-linecap="round"/></g>' +
+      '<path d="M30 100q6-26 14-32M46 100q2-22-4-30M228 100q6-24 16-30M248 100q0-20-8-26" fill="none" stroke="' + LT2 + '" stroke-width="5" stroke-linecap="round"/>';
+  },
+  /* Crew of capsule figures under stars */
+  crew:function(g){
+    const k = seed(g) % 12;
+    const fig = function(x,y,s,fill){
+      return '<g transform="translate(' + x + ',' + y + ') scale(' + s + ')">' +
+        '<path d="M-18 -22a18 18 0 0 1 36 0v34a8 8 0 0 1-8 8h-20a8 8 0 0 1-8-8z" fill="' + fill + '"/>' +
+        '<path d="M-4 -22h18a8 8 0 0 1 0 16H-4a8 8 0 0 1 0-16z" fill="' + INK2 + '"/>' +
+        '<rect x="-16" y="20" width="12" height="16" rx="5" fill="' + fill + '"/>' +
+        '<rect x="4" y="20" width="12" height="16" rx="5" fill="' + fill + '"/></g>';
+    };
+    return fig(108+k,50,1,LT) + fig(178-k,58,.78,LT2) + fig(236,44,.55,LT3) +
+      '<path d="M40 30l4 8 8 4-8 4-4 8-4-8-8-4 8-4zM286 74l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" fill="' + LT2 + '"/>' +
+      '<circle cx="62" cy="80" r="5" fill="' + LT3 + '"/>';
+  },
+  /* Fighter: starburst impact with crossed bolts */
+  clash:function(g){
+    const k = seed(g) % 16;
+    return '<path d="M160 8l16 30 32-18-14 33 35 5-28 21 28 21-35 5 14 33-32-18-16 30-16-30-32 18 14-33-35-5 28-21-28-21 35-5-14-33 32 18z" fill="' + LT3 + '"/>' +
+      '<path d="M' + (146+k) + ' 24l-22 40h20l-14 34 40-46h-20l18-28z" fill="' + LT + '"/>' +
+      '<path d="M62 46l30 22-30 22M258 46l-30 22 30 22" fill="none" stroke="' + LT2 + '" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>';
+  },
+  /* Cake and party food */
+  cake:function(g){
+    return '<path d="M0 104h320" stroke="' + INK2 + '" stroke-width="18"/>' +
+      '<path d="M104 96V60h112v36a8 8 0 0 1-8 8h-96a8 8 0 0 1-8-8z" fill="' + LT + '"/>' +
+      '<path d="M104 60q14 12 28 0t28 0 28 0 28 0v10q-14 12-28 0t-28 0-28 0-28 0z" fill="' + LT2 + '"/>' +
+      '<path d="M132 60V40M160 60V34M188 60V40" stroke="' + LT + '" stroke-width="6" stroke-linecap="round"/>' +
+      '<path d="M132 40q6-8 0-12 8 4 6 12M160 34q7-9 0-14 9 5 7 14M188 40q6-8 0-12 8 4 6 12" fill="' + LT2 + '"/>' +
+      '<circle cx="56" cy="82" r="18" fill="' + LT2 + '"/><path d="M38 82h36" stroke="' + INK2 + '" stroke-width="4"/>' +
+      '<circle cx="264" cy="76" r="14" fill="' + LT3 + '"/>';
+  },
+  /* Heist loot */
+  loot:function(g){
+    return '<path d="M0 104h320" stroke="' + INK2 + '" stroke-width="18"/>' +
+      '<path d="M138 44h44l-10-14h-24z" fill="' + LT2 + '"/>' +
+      '<path d="M160 44c34 0 48 24 48 36s-18 22-48 22-48-10-48-22 14-36 48-36z" fill="' + LT + '"/>' +
+      '<path d="M160 60v28M152 66h14a6 6 0 0 1 0 12h-12a6 6 0 0 0 0 12h14" fill="none" stroke="' + INK2 + '" stroke-width="5" stroke-linecap="round"/>' +
+      '<circle cx="66" cy="60" r="17" fill="' + LT2 + '"/><path d="M49 60h34" stroke="' + INK2 + '" stroke-width="4"/>' +
+      '<circle cx="252" cy="46" r="13" fill="' + LT3 + '"/><circle cx="272" cy="80" r="9" fill="' + LT3 + '"/>';
+  },
+  /* Physics ragdolls mid-wobble */
+  wobble:function(g){
+    const k = seed(g) % 14;
+    const doll = function(x,y,rot,fill,s){
+      return '<g transform="translate(' + x + ',' + y + ') rotate(' + rot + ') scale(' + s + ')">' +
+        '<circle cx="0" cy="0" r="13" fill="' + fill + '"/>' +
+        '<path d="M0 13v26M0 39l-14 20M0 39l15 19M0 20l-20 12M0 20l21 8" stroke="' + fill + '" stroke-width="9" stroke-linecap="round" fill="none"/></g>';
+    };
+    return '<path d="M0 104h320" stroke="' + INK2 + '" stroke-width="18"/>' +
+      '<rect x="118" y="86" width="84" height="18" rx="9" fill="' + INK + '"/>' +
+      doll(96+k,32,-18,LT,1) + doll(200-k,38,22,LT2,.85) + doll(268,52,-8,LT3,.6) +
+      '<path d="M40 40q10 12 0 24" fill="none" stroke="' + LT3 + '" stroke-width="6" stroke-linecap="round"/>';
+  }
+};
+
+/* Card artwork.
+   The illustrated scene is always drawn first. When a game has an `image`, the key art is
+   layered over the top: a blurred copy fills the strip, and a sharp copy sits inside it with
+   object-fit:contain so nothing important is cropped, whatever shape the source image is.
+   If the file is missing (someone copied index.html without the images folder), onerror
+   removes the layer and the illustration underneath shows through. */
+function gameArt(g){
+  const gid = "grad-" + g.id;
+  const scene = '<svg class="scene" viewBox="0 0 320 120" preserveAspectRatio="xMidYMid slice" ' +
+    'role="img" aria-label="Illustration representing ' + esc(g.title) + '">' +
+    '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="' + g.c1 + '"/><stop offset="1" stop-color="' + g.c2 + '"/>' +
+    "</linearGradient></defs>" +
+    '<rect width="320" height="120" fill="url(#' + gid + ')"/>' +
+    (MOTIFS[g.art] || MOTIFS.party)(g) +
+  "</svg>";
+  if(!g.image) return scene;
+  const src = esc(g.image);
+  return scene +
+    '<span class="coverwrap">' +
+      '<img class="cover-bg" src="' + src + '" alt="" aria-hidden="true">' +
+      '<img class="cover" src="' + src + '" ' +
+        'alt="Key art for ' + esc(g.title) + '" ' +
+        'onerror="this.parentNode.parentNode.removeChild(this.parentNode)">' +
+    "</span>";
+}
+
+/* ============================================================================
+   5. RENDERING HELPERS
+   ========================================================================== */
+function esc(s){
+  return String(s).replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function ratingBar(n,label){
+  let out = '<span class="rating" role="img" aria-label="' + esc(label) + ': ' + n + ' out of 5">';
+  for(let i=1;i<=5;i++) out += '<i class="' + (i<=n ? "on" : "") + '"></i>';
+  return out + "</span>";
+}
+function isFav(id){ return state.favs.indexOf(id) > -1; }
+
+/* One reusable card used by results, browse and saved views. */
+function gameCard(g,opts){
+  opts = opts || {};
+  const score = opts.score;
+  const reasons = opts.reasons;
+  return '' +
+  '<article class="game' + (opts.best ? " best" : "") + '">' +
+    '<div class="art">' +
+      gameArt(g) +
+      '<button type="button" class="fav no-print" data-fav="' + g.id + '" aria-pressed="' + isFav(g.id) + '" ' +
+        'aria-label="' + (isFav(g.id) ? "Remove " : "Save ") + esc(g.title) + '">' +
+        icon(isFav(g.id) ? "starFill" : "star",19) + "</button>" +
+      (score != null ? '<span class="score">' + score + '% match</span>' : "") +
+      '<span class="dept" data-status="' + g.dept + '">' + icon(DEPT_INFO[g.dept].icon,15) +
+        DEPT_INFO[g.dept].short + "</span>" +
+    '</div>' +
+    '<div class="game-body">' +
+      (opts.best ? '<p class="genre" style="color:var(--brand);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;margin-bottom:6px">Best match</p>' : "") +
+      "<h3>" + esc(g.title) + "</h3>" +
+      '<p class="genre">' + esc(g.genre) + " &middot; " + g.platforms.map(function(p){ return PLATFORM_NAMES[p]; }).join(", ") + "</p>" +
+      '<div class="dept-line" data-status="' + g.dept + '">' +
+        "<b>Department position: " + DEPT_INFO[g.dept].label + ".</b> " + DEPT_INFO[g.dept].detail +
+        (g.deptNote ? " " + esc(g.deptNote) : "") +
+      "</div>" +
+      '<ul class="meta">' +
+        '<li><span class="k">Cost</span><span class="v">' + esc(g.costLabel) + "</span></li>" +
+        '<li><span class="k">Players</span><span class="v">' + esc(g.playersLabel) + "</span></li>" +
+        '<li><span class="k">Control complexity</span><span class="v">' + COMPLEXITY_WORDS[g.complexity] + " " + ratingBar(g.complexity,"Control complexity") + "</span></li>" +
+        '<li><span class="k">Accessibility</span><span class="v">' + g.access + "/5 " + ratingBar(g.access,"Accessibility rating") + "</span></li>" +
+        '<li><span class="k">Suitable ages</span><span class="v">' + esc(g.ages) + "</span></li>" +
+        '<li><span class="k">Match length</span><span class="v">' + esc(g.length) + "</span></li>" +
+        '<li><span class="k">Internet required</span><span class="v">' + (g.internet ? "Yes" : "No") + "</span></li>" +
+        '<li><span class="k">Plays offline</span><span class="v">' + (g.offline ? "Yes" : "No") + "</span></li>" +
+      "</ul>" +
+      (reasons ?
+        '<div class="why"><h4>Why this game?</h4><ul>' +
+          reasons.map(function(r){
+            const warn = typeof r === "object" && r.warn;
+            const text = typeof r === "object" ? r.text : r;
+            return "<li" + (warn ? ' class="warn"' : "") + ">" +
+                   (warn ? icon("alert",15) + " " : "") + esc(text) + "</li>";
+          }).join("") +
+        "</ul></div>" : "") +
+      '<details class="more"' + (opts.open ? " open" : "") + ">" +
+        "<summary>Accessibility features &amp; school settings</summary>" +
+        '<div class="more-body">' +
+          "<p>" + esc(g.blurb) + "</p>" +
+          "<h5>Accessibility features</h5><ul>" +
+            g.features.map(function(f){ return "<li>" + esc(f) + "</li>"; }).join("") +
+          "</ul>" +
+          "<h5>Suggested school settings</h5><ul>" +
+            g.settings.map(function(s){ return "<li>" + esc(s) + "</li>"; }).join("") +
+          "</ul>" +
+          "<h5>Style</h5>" +
+          '<div class="tagrow">' + g.styles.map(function(s){ return '<span class="tag">' + STYLE_NAMES[s] + "</span>"; }).join("") + "</div>" +
+        "</div>" +
+      "</details>" +
+    "</div>" +
+  "</article>";
+}
+
+/* ============================================================================
+   6. WIZARD
+   ========================================================================== */
+const $ = function(sel){ return document.querySelector(sel); };
+const $$ = function(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+
+function currentStep(){ return STEPS[state.step]; }
+
+function answered(step){
+  const v = state.answers[step.key];
+  if(step.multi) return v.length > 0;
+  return v !== null;
+}
+
+function renderStep(){
+  const step = currentStep();
+  $("#q-title").textContent = step.title;
+  $("#q-hint").innerHTML = (step.multi ? '<span class="pill">Select all that apply</span>' : "") + esc(step.hint);
+  $("#step-count").textContent = "Question " + (state.step + 1) + " of " + STEPS.length;
+  $("#track-fill").style.width = (((state.step + 1) / STEPS.length) * 100) + "%";
+
+  $("#options").innerHTML = step.options.map(function(o){
+    const val = state.answers[step.key];
+    const on = step.multi ? val.indexOf(o.v) > -1 : val === o.v;
+    return '<button type="button" class="opt" data-val="' + o.v + '" aria-pressed="' + on + '">' +
+      '<span class="ico">' + icon(o.icon,22) + "</span>" +
+      '<span class="lbl">' + esc(o.label) + "</span>" +
+      (o.sub ? '<span class="sub">' + esc(o.sub) + "</span>" : "") +
+    "</button>";
+  }).join("");
+
+  $("#step-dots").innerHTML = STEPS.map(function(s,i){
+    const st = i === state.step ? "current" : (answered(s) ? "done" : "todo");
+    return '<button type="button" data-goto="' + i + '" data-state="' + st + '" ' +
+           'aria-label="Question ' + (i+1) + ': ' + esc(s.title) + '">' + (i+1) + "</button>";
+  }).join("");
+
+  $("#back-btn").disabled = state.step === 0;
+  $("#skip-btn").hidden = !step.optional;
+  const last = state.step === STEPS.length - 1;
+  $("#next-btn").innerHTML = (last ? "See recommendations " : "Next ") + icon("arrowRight");
+  $("#next-btn").disabled = !answered(step) && !step.optional;
+  $("#wizard-live").textContent = step.title;
+}
+
+function chooseOption(v){
+  const step = currentStep();
+  if(step.multi){
+    const arr = state.answers[step.key];
+    const i = arr.indexOf(v);
+    if(i > -1) arr.splice(i,1); else arr.push(v);
+    /* "No equipment yet" is exclusive of owned platforms. */
+    if(step.key === "platforms"){
+      if(v === "none" && arr.indexOf("none") > -1) state.answers.platforms = ["none"];
+      else if(v !== "none") state.answers.platforms = arr.filter(function(p){ return p !== "none"; });
+    }
+    renderStep();
+  }else{
+    state.answers[step.key] = v;
+    renderStep();
+    setTimeout(nextStep,220);   // brief pause so the tick is visible
+  }
+}
+
+function nextStep(){
+  const step = currentStep();
+  if(!answered(step) && !step.optional) return;
+  if(state.step === STEPS.length - 1){ showResults(); return; }
+  state.step++;
+  renderStep();
+  $("#wizard-body").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function startWizard(){
+  $("#intro").hidden = true;
+  $("#wizard-body").hidden = false;
+  renderStep();
+  $("#wizard-body").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function restart(){
+  state.step = 0;
+  state.answers = {goal:null,needs:[],platforms:[],budget:null,students:null,styles:[],event:null};
+  state.results = null;
+  setView("wizard");
+  $("#intro").hidden = false;
+  $("#wizard-body").hidden = true;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ============================================================================
+   7. RESULTS
+   ========================================================================== */
+function answerChips(){
+  const a = state.answers, out = [];
+  if(a.goal) out.push(["Goal",LABELS["goal:"+a.goal]]);
+  if(a.needs.length) out.push(["Students",a.needs.map(function(n){ return LABELS["needs:"+n]; }).join(", ")]);
+  if(a.platforms.length) out.push(["Platform",a.platforms.map(function(p){ return LABELS["platforms:"+p]; }).join(", ")]);
+  if(a.budget) out.push(["Budget",LABELS["budget:"+a.budget]]);
+  if(a.students) out.push(["Group size",LABELS["students:"+a.students]]);
+  if(a.styles.length) out.push(["Style",a.styles.map(function(s){ return LABELS["styles:"+s]; }).join(", ")]);
+  if(a.event) out.push(["Event",LABELS["event:"+a.event]]);
+  return out.map(function(p){ return '<span class="chip">' + p[0] + ": <b>" + esc(p[1]) + "</b></span>"; }).join("");
+}
+
+function showResults(){
+  const a = state.answers;
+  const ranked = rank(a);
+  state.results = ranked;
+  if(!ranked.length){
+    $("#answer-chips").innerHTML = answerChips();
+    $("#results-body").innerHTML = '<div class="empty"><span class="big" data-icon="clipboard" data-icon-size="34"></span>' +
+      "<p>No games to show. Turn off <strong>department-permitted only</strong> to include titles " +
+      "your school can self-assess.</p></div>";
+    setView("results");
+    return;
+  }
+
+  const best = ranked[0];
+  const alts = ranked.slice(1,4);
+  const mentions = ranked.slice(4,7);
+
+  let html = "";
+  html += '<div class="grid" style="grid-template-columns:1fr;max-width:640px">' +
+          gameCard(best.game,{score:best.score,reasons:reasonsFor(best,a),best:true,open:true}) + "</div>";
+
+  if(alts.length){
+    html += '<h2 class="section-label">Excellent alternatives</h2>';
+    html += '<div class="grid">' + alts.map(function(r){
+      return gameCard(r.game,{score:r.score,reasons:reasonsFor(r,a)});
+    }).join("") + "</div>";
+  }
+
+  if(mentions.length){
+    html += '<h2 class="section-label">Honourable mentions</h2>';
+    html += '<div class="grid">' + mentions.map(function(r){
+      /* Trim the positives but never drop a caveat. */
+      const all = reasonsFor(r,a);
+      const warns = all.filter(function(x){ return typeof x === "object"; });
+      const good = all.filter(function(x){ return typeof x !== "object"; }).slice(0,3);
+      return gameCard(r.game,{score:r.score,reasons:good.concat(warns)});
+    }).join("") + "</div>";
+  }
+
+  html += '<div class="note no-print"><strong>Before you commit:</strong> confirm the classification suits your ' +
+          'cohort, check your school network allows any online play, and run one practice session that does not ' +
+          'count towards anything. Prices are indicative and change often.</div>';
+
+  $("#answer-chips").innerHTML = answerChips();
+  $("#results-body").innerHTML = html;
+  setView("results");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ============================================================================
+   8. BROWSE, COMPARE, FAVOURITES
+   ========================================================================== */
+function renderFilters(){
+  const plats = Object.keys(PLATFORM_NAMES).map(function(p){
+    return '<button type="button" data-filter="platform" data-val="' + p + '" aria-pressed="' +
+           (state.filters.platform === p) + '">' + PLATFORM_NAMES[p] + "</button>";
+  }).join("");
+  const styles = Object.keys(STYLE_NAMES).map(function(s){
+    return '<button type="button" data-filter="style" data-val="' + s + '" aria-pressed="' +
+           (state.filters.style === s) + '">' + STYLE_NAMES[s] + "</button>";
+  }).join("");
+  $("#browse-filters").innerHTML = plats +
+    '<span style="width:1px;background:var(--border);margin:0 4px"></span>' + styles +
+    '<button type="button" data-filter="clear" data-val="" aria-pressed="false">Clear filters</button>';
+}
+
+/* If a teacher searches for an assessed title that is not in this database,
+   tell them its department status rather than showing nothing. */
+function searchNotice(q){
+  if(!q) return "";
+  const inDb = GAMES.map(function(g){ return g.title.toLowerCase(); });
+  const hit = function(list){
+    return list.filter(function(t){
+      return t.toLowerCase().indexOf(q) > -1 && inDb.indexOf(t.toLowerCase()) === -1;
+    });
+  };
+  const yes = hit(DEPT_PERMITTED), no = hit(DEPT_NOT_PERMITTED);
+  let out = "";
+  if(no.length){
+    out += '<div class="dept-line" data-status="notPermitted" style="margin-bottom:14px">' +
+      icon("ban",16) + " <b>" + esc(no.join(", ")) + ":</b> assessed by the department and <b>not permitted</b> for use in schools.</div>";
+  }
+  if(yes.length){
+    out += '<div class="dept-line" style="margin-bottom:14px">' +
+      icon("shield",16) + " <b>" + esc(yes.join(", ")) + ":</b> permitted by the department (subject to local decision making), " +
+      "but not in this database &mdash; the titles here are chosen for inclusive settings.</div>";
+  }
+  return out;
+}
+
+function renderBrowse(){
+  const q = state.filters.q.toLowerCase().trim();
+  const list = eligibleGames().filter(function(g){
+    if(state.filters.platform && g.platforms.indexOf(state.filters.platform) === -1) return false;
+    if(state.filters.style && g.styles.indexOf(state.filters.style) === -1) return false;
+    if(!q) return true;
+    const hay = (g.title + " " + g.genre + " " + g.blurb + " " +
+      g.platforms.map(function(p){ return PLATFORM_NAMES[p]; }).join(" ") + " " +
+      g.styles.map(function(s){ return STYLE_NAMES[s]; }).join(" ")).toLowerCase();
+    return hay.indexOf(q) > -1;
+  });
+  $("#browse-notice").innerHTML = searchNotice(q);
+  $("#browse-grid").innerHTML = list.length
+    ? list.map(function(g){ return gameCard(g,{}); }).join("")
+    : '<div class="empty" style="grid-column:1/-1"><span class="big" data-icon="search" data-icon-size="34"></span>' +
+      "<p>No games match that search. Try clearing the filters.</p></div>";
+  renderFilters();
+}
+
+function renderFavs(){
+  const list = GAMES.filter(function(g){ return isFav(g.id); });
+  $("#fav-grid").innerHTML = list.length
+    ? list.map(function(g){ return gameCard(g,{}); }).join("")
+    : '<div class="empty" style="grid-column:1/-1"><span class="big" data-icon="star" data-icon-size="34"></span>' +
+      "<p>Nothing saved yet. Tap the star on any game card to keep it here.</p></div>";
+  $("#fav-count").textContent = state.favs.length + " saved";
+}
+
+function renderCompare(){
+  const a = GAMES.find(function(g){ return g.id === $("#cmp-a").value; });
+  const b = GAMES.find(function(g){ return g.id === $("#cmp-b").value; });
+  if(!a || !b) return;
+  const rows = [
+    ["Department position", icon(DEPT_INFO[a.dept].icon,16) + " " + DEPT_INFO[a.dept].label + (a.deptNote ? "<br><small>" + esc(a.deptNote) + "</small>" : ""),
+                            icon(DEPT_INFO[b.dept].icon,16) + " " + DEPT_INFO[b.dept].label + (b.deptNote ? "<br><small>" + esc(b.deptNote) + "</small>" : "")],
+    ["Genre",       a.genre, b.genre],
+    ["Platforms",   a.platforms.map(function(p){ return PLATFORM_NAMES[p]; }).join(", "),
+                    b.platforms.map(function(p){ return PLATFORM_NAMES[p]; }).join(", ")],
+    ["Cost",        a.costLabel, b.costLabel],
+    ["Players",     a.playersLabel, b.playersLabel],
+    ["Control complexity", COMPLEXITY_WORDS[a.complexity] + " " + ratingBar(a.complexity,"Complexity"),
+                           COMPLEXITY_WORDS[b.complexity] + " " + ratingBar(b.complexity,"Complexity")],
+    ["Accessibility", a.access + "/5 " + ratingBar(a.access,"Accessibility"),
+                      b.access + "/5 " + ratingBar(b.access,"Accessibility")],
+    ["Suitable ages", a.ages, b.ages],
+    ["Match length",  a.length, b.length],
+    ["Internet required", a.internet ? "Yes" : "No", b.internet ? "Yes" : "No"],
+    ["Plays offline",     a.offline ? "Yes" : "No",  b.offline ? "Yes" : "No"],
+    ["Best for", a.blurb, b.blurb],
+    ["Key accessibility features", "<ul style='margin:0;padding-left:18px'>" + a.features.map(function(f){ return "<li>" + esc(f) + "</li>"; }).join("") + "</ul>",
+                                   "<ul style='margin:0;padding-left:18px'>" + b.features.map(function(f){ return "<li>" + esc(f) + "</li>"; }).join("") + "</ul>"],
+    ["Suggested settings", "<ul style='margin:0;padding-left:18px'>" + a.settings.map(function(s){ return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>",
+                           "<ul style='margin:0;padding-left:18px'>" + b.settings.map(function(s){ return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>"]
+  ];
+  $("#cmp-table").innerHTML =
+    "<thead><tr><th scope='col'>&nbsp;</th><th scope='col'>" + esc(a.title) +
+    "</th><th scope='col'>" + esc(b.title) + "</th></tr></thead><tbody>" +
+    rows.map(function(r){
+      return "<tr><th scope='row'>" + r[0] + "</th><td>" + r[1] + "</td><td>" + r[2] + "</td></tr>";
+    }).join("") + "</tbody>";
+}
+
+function initCompare(){
+  const opts = GAMES.filter(function(g){ return g.dept !== "notPermitted"; })
+    .map(function(g){
+      return '<option value="' + g.id + '">' + esc(g.title) +
+             (g.dept === "permitted" ? " — permitted" : "") + "</option>";
+    }).join("");
+  $("#cmp-a").innerHTML = opts;
+  $("#cmp-b").innerHTML = opts;
+  $("#cmp-a").value = "mk8";
+  $("#cmp-b").value = "minecraft";
+  renderCompare();
+}
+
+/* ============================================================================
+   9. NAVIGATION, THEME, EVENTS
+   ========================================================================== */
+function setView(name){
+  state.view = name;
+  ["wizard","results","browse","compare","favourites","about"].forEach(function(v){
+    $("#view-" + v).hidden = (v !== name);
+  });
+  $$("nav.main button").forEach(function(b){
+    if(b.dataset.nav === name || (name === "results" && b.dataset.nav === "wizard")) b.setAttribute("aria-current","page");
+    else b.removeAttribute("aria-current");
+  });
+  if(name === "browse") renderBrowse();
+  if(name === "favourites") renderFavs();
+  if(name === "compare") renderCompare();
+}
+
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  const btn = $("#theme-toggle");
+  btn.innerHTML = icon(t === "dark" ? "sun" : "moon",19);
+  btn.setAttribute("aria-label","Switch to " + (t === "dark" ? "light" : "dark") + " mode");
+  save("iegf-theme",t);
+}
+
+function toggleFav(id){
+  const i = state.favs.indexOf(id);
+  if(i > -1) state.favs.splice(i,1); else state.favs.push(id);
+  save("iegf-favs",state.favs);
+  $("#fav-count").textContent = state.favs.length + " saved";
+  /* Update every visible instance of that card's star. */
+  $$('[data-fav="' + id + '"]').forEach(function(b){
+    const on = isFav(id);
+    b.setAttribute("aria-pressed",on);
+    b.innerHTML = icon(on ? "starFill" : "star",19);
+  });
+  if(state.view === "favourites") renderFavs();
+}
+
+function setDeptOnly(on){
+  state.deptOnly = on;
+  save("iegf-dept-only",on);
+  $$("[data-dept-toggle]").forEach(function(b){ b.setAttribute("aria-pressed",on); });
+  if(state.view === "browse") renderBrowse();
+  if(state.view === "results" && state.results) showResults();
+}
+
+function discover(){
+  const pool = eligibleGames();
+  const g = pool[Math.floor(Math.random() * pool.length)];
+  $("#answer-chips").innerHTML = '<span class="chip">A random pick from the database</span>';
+  $("#results-body").innerHTML =
+    '<div class="grid" style="grid-template-columns:1fr;max-width:640px">' +
+      gameCard(g,{open:true}) +
+    "</div>" +
+    '<div class="note no-print">Not what you need? Run the finder for a recommendation matched to your students.</div>';
+  $("#results-h").textContent = "Discover a game";
+  setView("results");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---- Event wiring (delegated where possible) ---- */
+document.addEventListener("click",function(e){
+  const nav = e.target.closest("[data-nav]");
+  if(nav){
+    if(nav.dataset.nav === "wizard") $("#results-h").textContent = "Your recommended games";
+    setView(nav.dataset.nav);
+    window.scrollTo({top:0,behavior:"smooth"});
+    return;
+  }
+  const opt = e.target.closest(".opt");
+  if(opt){ chooseOption(opt.dataset.val); return; }
+
+  const dot = e.target.closest("[data-goto]");
+  if(dot){ state.step = parseInt(dot.dataset.goto,10); renderStep(); return; }
+
+  const fav = e.target.closest("[data-fav]");
+  if(fav){ toggleFav(fav.dataset.fav); return; }
+
+  const dept = e.target.closest("[data-dept-toggle]");
+  if(dept){ setDeptOnly(dept.getAttribute("aria-pressed") !== "true"); return; }
+
+  const filt = e.target.closest("[data-filter]");
+  if(filt){
+    const kind = filt.dataset.filter, val = filt.dataset.val;
+    if(kind === "clear"){ state.filters.platform = null; state.filters.style = null; state.filters.q = ""; $("#search-input").value = ""; }
+    else state.filters[kind] = (state.filters[kind] === val) ? null : val;
+    renderBrowse();
+    return;
+  }
+});
+
+$("#start-btn").addEventListener("click",startWizard);
+$("#next-btn").addEventListener("click",nextStep);
+$("#back-btn").addEventListener("click",function(){ if(state.step > 0){ state.step--; renderStep(); } });
+$("#skip-btn").addEventListener("click",function(){ state.answers[currentStep().key] = []; nextStep(); });
+$("#restart-btn").addEventListener("click",restart);
+$("#redo-btn").addEventListener("click",function(){
+  $("#results-h").textContent = "Your recommended games";
+  setView("wizard"); $("#intro").hidden = true; $("#wizard-body").hidden = false;
+  state.step = 0; renderStep(); window.scrollTo({top:0,behavior:"smooth"});
+});
+$("#print-btn").addEventListener("click",function(){ window.print(); });
+$("#print-fav-btn").addEventListener("click",function(){ window.print(); });
+$("#discover-btn").addEventListener("click",discover);
+$("#discover-btn-2").addEventListener("click",discover);
+$("#theme-toggle").addEventListener("click",function(){
+  applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+});
+$("#search-input").addEventListener("input",function(e){ state.filters.q = e.target.value; renderBrowse(); });
+$("#cmp-a").addEventListener("change",renderCompare);
+$("#cmp-b").addEventListener("change",renderCompare);
+
+/* Keyboard: left/right arrows move through the wizard. */
+document.addEventListener("keydown",function(e){
+  if(state.view !== "wizard" || $("#wizard-body").hidden) return;
+  if(e.target.matches("input,select,textarea")) return;
+  if(e.key === "ArrowRight" && !$("#next-btn").disabled) nextStep();
+  if(e.key === "ArrowLeft" && state.step > 0){ state.step--; renderStep(); }
+});
+
+/* ---- Boot: theme, icons, saved preferences, first render ---- */
+(function init(){
+  const saved = load("iegf-theme",null);
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(saved || (prefersDark ? "dark" : "light"));
+  $$("[data-icon]").forEach(function(el){
+    el.innerHTML = icon(el.dataset.icon, parseInt(el.dataset.iconSize,10) || 20);
+  });
+  $$("[data-dept-toggle]").forEach(function(b){ b.setAttribute("aria-pressed",state.deptOnly); });
+  $$("[data-game-count]").forEach(function(el){ el.textContent = GAMES.length; });
+  renderStep();
+  renderFilters();
+  initCompare();
+  renderFavs();
+})();
+</script>
+</body>
+</html>
