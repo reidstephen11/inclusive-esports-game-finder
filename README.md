@@ -13,9 +13,7 @@ the two items on any static host.
 - **Locally:** open `index.html` in any modern browser. Works fully offline.
 - **On a USB stick / shared drive:** copy `index.html` and the `images` folder together.
   `index.html` on its own still runs — every card just falls back to its illustration.
-- **On GitHub Pages:** create a repo, add `index.html` and `images/`, then Settings → Pages →
-  deploy from `main` / root. The site appears at `https://<user>.github.io/<repo>/`.
-  For a QR code to show on the final slide, paste that URL into any QR generator.
+- **On GitHub Pages:** https://reidstephen11.github.io/inclusive-esports-game-finder/ 
 
 ## Department position on game titles
 
