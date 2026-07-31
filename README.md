@@ -32,6 +32,21 @@ not-yet-assessed titles; the choice is remembered per device. Searching for a pe
 database — Fortnite, VALORANT, League of Legends — returns its status with an explanation, since
 those are a poor fit for inclusive settings and are deliberately not included.
 
+## Titles left out on purpose
+
+Three well-known games were removed after reviewing them against the needs of students with
+disability. `EXCLUDED` holds the reason for each, and searching for one by name shows it rather
+than returning an empty list:
+
+- **Among Us** — verbal deduction and deception; scores 1/5 on communication support, and normal
+  play means public lobbies with strangers.
+- **Fall Guys** — department-permitted, but online-only, so students are matched with players
+  outside the school unless every round runs in a private lobby.
+- **Gang Beasts** — rated M for slapstick violence, and not on the department's assessed list.
+
+Add to `EXCLUDED` when you rule a title out locally; the entry is keyed by title and needs no
+other change.
+
 Status is derived at load time by exact title match against `DEPT_PERMITTED` and
 `DEPT_NOT_PERMITTED` near the top of the script. Update those two arrays when the department
 publishes a revision and every card, filter and recommendation re-flags itself. `DEPT_NOTES` holds
