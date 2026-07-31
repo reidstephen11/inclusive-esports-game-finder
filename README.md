@@ -1,7 +1,7 @@
 # Inclusive Esports Game Finder
 
 A single-file web app that helps educators choose the right esports game for an inclusive
-school program. Built as the practical activity for the QLD DoE ITD Conference session on
+school program. Built as the practical activity for the QLD DoE IT Conference session on
 Para Esports.
 
 **All the code lives in `index.html`**, with game key art in `images/`. No frameworks, no build
