@@ -27,7 +27,7 @@ Every card is flagged against the Queensland Department of Education's assessed 
   and never recommended, regardless of settings.
 
 A **Department-permitted only** toggle on the results and All games screens is **on by default**,
-restricting everything to assessed titles (8 of the 24 games qualify). Turn it off to include
+restricting everything to assessed titles (7 of the 21 games qualify). Turn it off to include
 not-yet-assessed titles; the choice is remembered per device. Searching for a permitted title that is not in the
 database — Fortnite, VALORANT, League of Legends — returns its status with an explanation, since
 those are a poor fit for inclusive settings and are deliberately not included.

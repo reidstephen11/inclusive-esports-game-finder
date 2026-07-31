@@ -431,7 +431,7 @@ footer.site p{margin-bottom:.5em}
          game list.</p>
       <div class="hero-actions">
         <button type="button" class="btn btn-primary" id="start-btn">Start the finder <span data-icon="arrowRight"></span></button>
-        <button type="button" class="btn btn-ghost" data-nav="browse">Browse all <span data-game-count>24</span> games</button>
+        <button type="button" class="btn btn-ghost" data-nav="browse">Browse all <span data-game-count>21</span> games</button>
         <button type="button" class="btn btn-ghost" id="discover-btn"><span data-icon="dice" data-icon-size="18"></span> Discover a game</button>
       </div>
     </div>
@@ -682,21 +682,6 @@ const GAMES = [
   settings:["Start in Exhibition vs bots (Rookie)","3v3 — more forgiving than 1v1","Quick chat only, voice chat off","Disable in-game item store access","Five-minute matches keep rotation moving"]
 },
 {
-  id:"fallguys", title:"Fall Guys", art:"obstacle", c1:"#ff5fa2", c2:"#7d3ce0", image:"images/fallguys.jpg",
-  genre:"Party obstacle course", platforms:["switch","pc","xbox","playstation"], cost:0, costLabel:"Free to play",
-  playersLabel:"Up to 4 per console, dozens online",
-  complexity:2, access:3, ages:"7+ (PG)", length:"3–8 min per show",
-  internet:true, offline:false,
-  blurb:"Being eliminated is funny rather than crushing, which makes it forgiving for anxious players. Requires internet, so check your school network before committing to it for an event.",
-  styles:["party","platformer"],
-  goals:{social:5,competition:4,teamwork:3,communication:2,physical:1,strategy:2,creativity:1,confidence:4,lunchtime:5,formal:3},
-  needs:{simpleControls:5,fineMotor:3,intellectual:4,autism:3,commSupport:5,attention:5,mixedAbilities:5,experienced:3,beginners:5},
-  playerFit:{2:4,4:5,8:5,16:5,rotating:5},
-  events:{casual:5,lunchtime:5,house:4,regional:3,inclusivePE:1,classroom:2},
-  features:["Run and jump only — two inputs","No combat or confrontation","Losing is low stakes and comic","Free on every platform","Local split-screen on console"],
-  settings:["Custom lobby so only your students play","Text chat disabled","Set a house-team scoring system across rounds","Warn students rounds are short — they rejoin fast","Check the school firewall well before the event"]
-},
-{
   id:"overcooked2", title:"Overcooked! 2", art:"kitchen", c1:"#ff9f43", c2:"#e0473c", image:"images/overcooked2.jpg",
   genre:"Cooperative chaos", platforms:["switch","pc","xbox","playstation"], cost:39, costLabel:"~$39 one-off",
   playersLabel:"1–4 local",
@@ -802,21 +787,6 @@ const GAMES = [
   settings:["Two players sharing one goal","Project onto the board for a whole-class puzzle","Use the in-game list as the task sequence","Let students take turns holding the controller"]
 },
 {
-  id:"gangbeasts", title:"Gang Beasts", art:"wobble", c1:"#f0803d", c2:"#9e2f4f", image:"images/gangbeasts.jpg",
-  genre:"Physics party brawler", platforms:["switch","pc","xbox","playstation"], cost:25, costLabel:"~$25 one-off",
-  playersLabel:"2–8 local",
-  complexity:3, access:3, ages:"12+ (M — slapstick violence)", length:"1–3 min per round",
-  internet:false, offline:true,
-  blurb:"Wobbly, slapstick and very funny, with skill mattering less than luck — which is exactly why mixed groups enjoy it. Check the classification suits your cohort before using it.",
-  styles:["party"],
-  goals:{social:5,competition:4,teamwork:3,communication:3,physical:1,strategy:1,creativity:1,confidence:3,lunchtime:4,formal:1},
-  needs:{simpleControls:4,fineMotor:2,intellectual:3,autism:2,commSupport:4,attention:5,mixedAbilities:3,experienced:3,beginners:3},
-  playerFit:{2:4,4:5,8:4,16:2,rotating:5},
-  events:{casual:5,lunchtime:4,house:3,regional:1,inclusivePE:1,classroom:1},
-  features:["Deliberately imprecise controls level the field","Team mode available","Short rounds, fast re-entry","No blood or realistic injury"],
-  settings:["Teams mode to reduce pile-ons","Choose flat, hazard-free stages","Round limit: 5","Confirm the classification suits your students"]
-},
-{
   id:"cakebash", title:"Cake Bash", art:"cake", c1:"#ffb3d1", c2:"#f0713d", image:"images/cakebash.jpg",
   genre:"Party minigames", platforms:["switch","pc","xbox","playstation"], cost:25, costLabel:"~$25 one-off",
   playersLabel:"1–4 local",
@@ -890,21 +860,6 @@ const GAMES = [
   events:{casual:5,lunchtime:5,house:2,regional:1,inclusivePE:1,classroom:5},
   features:["Move and jump only","Every level requires cooperation","Very short levels","Extremely low price","Simple pixel visuals, low sensory load"],
   settings:["Groups of four to six","Retry freely — levels reset instantly","Nominate a caller for each level","Debrief which strategies worked"]
-},
-{
-  id:"amongus", title:"Among Us", art:"crew", c1:"#f04f6a", c2:"#3d4fd9", image:"images/amongus.jpg",
-  genre:"Social deduction", platforms:["switch","pc","xbox","playstation"], cost:8, costLabel:"~$8 (free on mobile)",
-  playersLabel:"4–15 players",
-  complexity:2, access:3, ages:"9+ (PG)", length:"10–15 min per round",
-  internet:true, offline:false,
-  blurb:"The discussion is the activity — the game is just the prompt. Excellent for verbal reasoning and turn-taking, but demanding for students who find social inference or being accused difficult.",
-  styles:["strategy","party"],
-  goals:{social:5,competition:3,teamwork:4,communication:5,physical:1,strategy:5,creativity:1,confidence:3,lunchtime:5,formal:2},
-  needs:{simpleControls:4,fineMotor:4,intellectual:2,autism:2,commSupport:1,attention:3,mixedAbilities:3,experienced:3,beginners:4},
-  playerFit:{2:1,4:3,8:5,16:4,rotating:4},
-  events:{casual:5,lunchtime:5,house:3,regional:1,inclusivePE:1,classroom:3},
-  features:["Very simple movement and task controls","Private rooms with a join code","Colour-blind friendly player names","Adjustable task and speed settings","Discussion can be spoken in the room"],
-  settings:["Private room, code shared verbally","Discussion out loud, in-game chat off","Shorter discussion timer for younger groups","Set a class norm: no personal accusations","Consider a non-elimination variant"]
 },
 {
   id:"eafc", title:"EA Sports FC", art:"ball", c1:"#2fbf6f", c2:"#123f8c", image:"images/eafc.jpg",
@@ -1004,6 +959,14 @@ const DEPT_NOTES = {
   eafc:"FIFA 23 and NBA 2K23 are permitted. EA Sports FC is the successor to FIFA and is not separately listed — confirm locally before purchase.",
   lego:"LEGO Brawls is permitted. The LEGO co-op adventure games are not separately listed.",
   trackmania:"ShootMania Storm and Warsow are permitted. Trackmania is not separately listed."
+};
+
+/* Well-known titles deliberately left out, and why. Educators search for these by name,
+   so the browse screen answers the question instead of returning an empty list. */
+const EXCLUDED = {
+  "Among Us":"Left out on purpose. The game is built on verbal deduction and deception, which makes it one of the hardest titles to include students with intellectual disability, autism or communication support needs. Standard play also puts students in public lobbies with strangers.",
+  "Fall Guys":"Permitted by the department, but left out on purpose. It is online-only, so a session means matchmaking with players outside the school unless every round runs in a private lobby.",
+  "Gang Beasts":"Left out on purpose. It is rated M for slapstick violence, which puts it outside what most schools can run, and it is not on the department's assessed list."
 };
 
 /* Stamp every game with its department status. */
@@ -1915,8 +1878,16 @@ function searchNotice(q){
       return t.toLowerCase().indexOf(q) > -1 && inDb.indexOf(t.toLowerCase()) === -1;
     });
   };
-  const yes = hit(DEPT_PERMITTED), no = hit(DEPT_NOT_PERMITTED);
+  const dropped = Object.keys(EXCLUDED).filter(function(t){ return t.toLowerCase().indexOf(q) > -1; });
+  /* A deliberately excluded title gets its own explanation, so don't also list it
+     under the generic "permitted but not included" line. */
+  const yes = hit(DEPT_PERMITTED).filter(function(t){ return dropped.indexOf(t) === -1; });
+  const no = hit(DEPT_NOT_PERMITTED);
   let out = "";
+  dropped.forEach(function(t){
+    out += '<div class="dept-line" data-status="unlisted" style="margin-bottom:14px">' +
+      icon("info",16) + " <b>" + esc(t) + ":</b> " + esc(EXCLUDED[t]) + "</div>";
+  });
   if(no.length){
     out += '<div class="dept-line" data-status="notPermitted" style="margin-bottom:14px">' +
       icon("ban",16) + " <b>" + esc(no.join(", ")) + ":</b> assessed by the department and <b>not permitted</b> for use in schools.</div>";
